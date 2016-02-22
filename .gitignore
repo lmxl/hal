@@ -1,0 +1,12 @@
+.azkabanPlugin.json
+.classpath
+.gradle
+.pigProperties
+.project
+.settings
+*.iml
+*.ipr
+*.iws
+*.sublime-*
+build
+ligradle

@@ -1,0 +1,15 @@
+buildscript {
+  gradle.ext.addArtifactory(repositories)
+  gradle.ext.buildConfig()['linkedin.gradle.dependencies'].split(',').each { dep ->
+    dependencies { classpath dep }
+    configurations.classpath.resolutionStrategy.force(dep)
+  }
+}
+
+apply plugin: com.linkedin.ligradle.scala.LiScalaCrossBuildPlugin
+
+scalaCrossBuild {
+  defaultScalaVersion '2.10.4'
+  targetScalaVersions '2.10.4'
+  discoverProjects fileTree('.')
+}

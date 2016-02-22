@@ -1,0 +1,51 @@
+apply plugin: 'li-java'
+apply from: 'src/main/gradle/workflows.gradle'
+
+dependencies {
+  compile spec.external.avro
+  compile spec.external.jacksonCoreAsl
+  compile spec.product.metronome.'metronome-mapred'
+
+  runtime project(":hello-pig-udf")
+
+  testCompile project(":hello-utility")
+
+}
+
+// Generate class template using Avro JSON and assign the source sets to that directory
+apply from: 'src/main/gradle/helper/avro-code-gen.gradle'
+
+// Specify what goes into the Hadoop zip
+hadoopZip {
+  libPath = "."
+  zip("azkaban") {
+    // Add extra brackets for lazy evaluation of the azkaban folder
+    from { fileTree("azkaban").files } {
+      into "."
+    }
+    from("src/main/pig") {
+      into "src/main/pig"
+    }
+    from("src/main/python") {
+      into "src/main/python"
+    }
+    from("resource") {
+      into "resouce"
+    }
+  }
+  CRT { }
+}
+
+// The build depends on the Hadoop zips, which depends on compiling the Hadoop DSL
+startHadoopZips.dependsOn buildAzkabanFlows
+build.dependsOn buildHadoopZips
+
+// Avoid problems with missing jars in Artifactory by disabling transitive dependencies for grid multiproducts
+//def gridSet = ['com.linkedin.azkaban', 'com.linkedin.azkaban-plugins', 'com.linkedin.hadoop', 'com.linkedin.hive', 'com.linkedin.pig'] as HashSet;
+
+//configurations.all.each { configuration ->
+//  configuration.dependencies.findAll { dependency -> gridSet.contains(dependency.group) }*.transitive = false
+//}
+
+// Exclude grid multiproduct jars from the Hadoop zip
+//gridSet.each { groupId -> configurations.hadoopRuntime.exclude group: groupId }

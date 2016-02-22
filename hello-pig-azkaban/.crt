@@ -1,0 +1,8 @@
+# Hadoop CRT deployment file
+nertz.artifactName=hello-pig-azkaban-@version@-azkaban.zip
+nertz.azkabanServer=https://eat1-nertzaz01.grid.linkedin.com:8443
+nertz.projectName=hello-pig-azkaban
+
+war.artifactName=hello-pig-azkaban-@version@-azkaban.zip
+war.azkabanServer=https://lva1-waraz01.grid.linkedin.com:8443
+war.projectName=hello-pig-azkaban

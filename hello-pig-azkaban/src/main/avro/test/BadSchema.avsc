@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "UselessSchema",
+  "namespace": "com.linkedin.pigliunit",
+  "fields": [
+    {
+      "name": "badName",
+      "doc": "Use this schema for testing",
+      "type": [
+        "long",
+        "null"
+      ]
+    }
+  ]
+}

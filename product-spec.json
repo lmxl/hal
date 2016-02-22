@@ -1,0 +1,297 @@
+{
+  "name": "hadoop-starter-kit",
+  "group": "com.linkedin.@spec.name@",
+  "version": "1.0.111",
+  "scmUrl": "git@gitli.corp.linkedin.com:hadoop-dev/hadoop-starter-kit.git",
+  "owners": [
+    "ymo"
+  ],
+  "comment": "",
+  "description": "An example multiproduct that shows best practices for Hadoop and is supported by the Hadoop Dev Team",
+  "watchers": [],
+  "build": {
+    "commands": {
+      "build": "ligradle -Prelease=true -PallArtifacts build -x test -x :hello-dali-azkaban:fetchMetadata",
+      "clean": "ligradle clean",
+      "eclipse": "ligradle eclipse",
+      "idea": "ligradle idea",
+      "pcs": "ligradle test -x :hello-dali-azkaban:fetchMetadata",
+      "snapshot": "ligradle -Psnapshot=true build -x test -x :hello-dali-azkaban:fetchMetadata"
+    },
+    "toolchains": {
+      "gradle": {
+        "version": "2.8",
+        "plugins": {
+          "ligradle-jvm": {
+            "version": "1.*.*",
+            "libraries": [
+              "product-plugins"
+            ]
+          },
+          "ligradle-hadoop": {
+            "version": "1.*.*",
+            "libraries": [
+              "ligradle-hadoop"
+            ]
+          }
+        }
+      }
+    },
+    "type": "gradle",
+    "versions": {
+      "scala": "2.10.4",
+      "java": "1.8.0_40"
+    }
+  },
+  "runtime": {},
+  "review": {},
+  "topology": {
+    "applications": {
+      "hello-mapreduce-azkaban": {
+        "kind": "generic",
+        "meta": {
+          "start_timeout": 30,
+          "force_kill_delay": 30,
+          "features": [
+            "jmx",
+            "scala"
+          ]
+        },
+        "name": "hello-mapreduce-azkaban",
+        "artifact": "ivy:/com.linkedin.li-azkaban-skeleton/li-azkaban-skeleton/2.0.6",
+        "payloads": [
+          {
+            "name": "hello-mapreduce-azkaban"
+          }
+        ]
+      },
+      "hello-pig-azkaban": {
+        "kind": "generic",
+        "meta": {
+          "start_timeout": 30,
+          "force_kill_delay": 30,
+          "features": [
+            "jmx",
+            "scala"
+          ]
+        },
+        "name": "hello-pig-azkaban",
+        "artifact": "ivy:/com.linkedin.li-azkaban-skeleton/li-azkaban-skeleton/2.0.6",
+        "payloads": [
+          {
+            "name": "hello-pig-azkaban"
+          }
+        ]
+      }
+    }
+  },
+  "archive": {
+    "artifacts": {},
+    "repo_name": "DDS"
+  },
+  "dependencyResolution": {},
+  "external": {
+    "algebirdCore": "com.twitter:algebird-core_2.10:0.9.0",
+    "antlrRuntime": "org.antlr:antlr-runtime:3.4",
+    "aopalliance": "aopalliance:aopalliance:1.0",
+    "avro": "org.apache.avro:avro:1.7.7",
+    "avroMapred": "org.apache.avro:avro-mapred:1.7.7:hadoop2",
+    "cascadingAvro": "cascading.avro:avro-scheme:2.1.2",
+    "cascadingCore": "cascading:cascading-core:2.6.1",
+    "cascadingHadoop": "cascading:cascading-hadoop2-mr1:2.6.1",
+    "cascadingLocal": "cascading:cascading-local:2.6.1",
+    "chill": "com.twitter:chill_2.10:0.5.2",
+    "chillHadoop": "com.twitter:chill-hadoop:0.5.2",
+    "chillJava": "com.twitter:chill-java:0.5.2",
+    "commonsCli": "commons-cli:commons-cli:1.3.1",
+    "commonsCodec": "commons-codec:commons-codec:1.6",
+    "commonsCollections": "commons-collections:commons-collections:3.2.1",
+    "commonsConfiguration": "commons-configuration:commons-configuration:1.9",
+    "commonsHttpClient": "commons-httpclient:commons-httpclient:3.1",
+    "commonsIO": "commons-io:commons-io:2.4",
+    "commonsLang": "commons-lang:commons-lang:2.6",
+    "commonsLogging": "commons-logging:commons-logging:1.1.3",
+    "datafu": "com.linkedin.datafu:datafu:1.2.0",
+    "datafuHourglass": "com.linkedin.datafu:datafu-hourglass:0.1.3",
+    "datanucleus-api-jdo": "org.datanucleus:datanucleus-api-jdo:3.2.6",
+    "datanucleus-core": "org.datanucleus:datanucleus-core:3.2.10",
+    "datanucleus-rdbms": "org.datanucleus:datanucleus-rdbms:3.2.9",
+    "derby": "org.apache.derby:derby:10.10.1.1",
+    "guava": "com.google.guava:guava:11.0.2",
+    "guice": "com.google.inject:guice:3.0",
+    "guiceServlet": "com.google.inject.extensions:guice-servlet:3.0",
+    "jacksonCoreAsl": "org.codehaus.jackson:jackson-core-asl:1.9.13",
+    "jacksonMapperAsl": "org.codehaus.jackson:jackson-mapper-asl:1.9.13",
+    "javaxInject": "javax.inject:javax.inject:1",
+    "jaxbImpl": "com.sun.xml.bind:jaxb-impl:2.2.3-1",
+    "jerseyCore": "com.sun.jersey:jersey-core:1.9",
+    "jerseyGuice": "com.sun.jersey.contribs:jersey-guice:1.9",
+    "jerseyJson": "com.sun.jersey:jersey-json:1.9",
+    "jerseyServer": "com.sun.jersey:jersey-server:1.9",
+    "jetty": "org.mortbay.jetty:jetty:6.1.26",
+    "jettyUtil": "org.mortbay.jetty:jetty-util:6.1.26",
+    "jgraph": "thirdparty:jgrapht-jdk1.6:0.8.1",
+    "jline": "jline:jline:0.9.94",
+    "joda": "joda-time:joda-time:2.3",
+    "jodaConvert": "org.joda:joda-convert:1.7",
+    "jsonSimple": "org.json:json-simple:1.1.1",
+    "jython": "org.python:jython:2.5.3",
+    "kryo": "com.esotericsoftware.kryo:kryo:2.21",
+    "log4j": "log4j:log4j:1.2.17",
+    "maple": "com.twitter:maple:0.13.0",
+    "netty": "io.netty:netty:3.8.0.Final",
+    "paranamer": "com.thoughtworks.paranamer:paranamer:2.6",
+    "protobuf": "com.google.protobuf:protobuf-java:2.5.0",
+    "scalaLibrary": "org.scala-lang:scala-library:2.10.4",
+    "scalaTest": "org.scalatest:scalatest_2.10:2.2.2",
+    "scaldingArgs": "com.twitter:scalding-args_2.10:0.13.1",
+    "scaldingAvro": "com.twitter:scalding-avro_2.10:0.13.1",
+    "scaldingCommons": "com.twitter:scalding-commons_2.10:0.13.1",
+    "scaldingCore": "com.twitter:scalding-core_2.10:0.13.1",
+    "scaldingDate": "com.twitter:scalding-date_2.10:0.13.1",
+    "servletApi": "javax.servlet:servlet-api:2.5",
+    "slf4j": "org.slf4j:slf4j-api:1.7.12",
+    "slf4jSimple": "org.slf4j:slf4j-simple:1.7.12",
+    "slf4jlog4j": "org.slf4j:slf4j-log4j12:1.7.12",
+    "testng": "org.testng:testng:6.8.8"
+  },
+  "product": {
+    "azkaban": {
+      "libraries": [
+        "azkaban-common"
+      ],
+      "version": "2.6.2.53"
+    },
+    "azkaban-plugins": {
+      "libraries": [
+        "azkaban-jobtype"
+      ],
+      "version": "2.6.4.17"
+    },
+    "content-test-tools": {
+      "libraries": [
+        "li-pig-unit-driver"
+      ],
+      "version": "0.2.29"
+    },
+    "dali-mp": {
+      "libraries": [
+        "dali-all"
+      ],
+      "version": "1.0.16",
+      "group": "com.linkedin.dali"
+    },
+    "dali-pig-unit-mp": {
+      "libraries": [
+        "dali-pig-unit"
+      ],
+      "version": "0.0.5",
+      "group": "com.linkedin.dali"
+    },
+    "datapps": {
+      "libraries": [
+        {
+          "name": "da_scalding_2.10",
+          "key": "da_scalding"
+        },
+        "da_utils"
+      ],
+      "version": "0.1.1"
+    },
+    "gradle-scala": {
+      "libraries": [
+        "plugins"
+      ],
+      "version": "0.0.4"
+    },
+    "hadoop": {
+      "libraries": [
+        "hadoop-auth",
+        "hadoop-streaming",
+        "hadoop-common",
+        "hadoop-hdfs",
+        "hadoop-mapreduce-client-app",
+        "hadoop-mapreduce-client-common",
+        "hadoop-mapreduce-client-core",
+        "hadoop-mapreduce-client-hs",
+        "hadoop-mapreduce-client-jobclient",
+        "hadoop-mapreduce-client-shuffle",
+        "hadoop-yarn-api",
+        "hadoop-yarn-client",
+        "hadoop-yarn-common",
+        "hadoop-yarn-server-common",
+        "hadoop-yarn-server-nodemanager",
+        "hadoop-yarn-server-resourcemanager",
+        "hadoop-yarn-server-tests",
+        "hadoop-yarn-server-web-proxy"
+      ],
+      "version": "2.3.*"
+    },
+    "hive": {
+      "libraries": [
+        "hive-exec"
+      ],
+      "version": "0.13.1.27"
+    },
+    "li-hadoop-util": {
+      "libraries": [
+        "hadoop-util",
+        {
+          "name": "hadoop-util",
+          "key": "hadoop-util-h2",
+          "configuration": "h2Runtime",
+          "classifier": "h2"
+        }
+      ],
+      "version": "0.1.3"
+    },
+    "li-spark-util": {
+      "libraries": [
+        "spark-util_2.10"
+      ],
+      "version": "1.0.2"
+    },
+    "linkedin-pig": {
+      "libraries": [
+        "linkedin-pig",
+        {
+          "name": "linkedin-pig",
+          "key": "linkedin-pig-h2",
+          "classifier": "h2"
+        }
+      ],
+      "version": "0.11.1.60"
+    },
+    "metronome": {
+      "libraries": [
+        "metronome-mapred",
+        "metronome-util"
+      ],
+      "version": "*"
+    },
+    "metronome-avro-tools": {
+      "libraries": [
+        "metronome-avro-compiler"
+      ],
+      "version": "0.0.5"
+    },
+    "pig": {
+      "libraries": [
+        "pig",
+        {
+          "name": "pig",
+          "key": "pig-h2",
+          "configuration": "compile-h2",
+          "classifier": "h2"
+        },
+        "piggybank",
+        "pigunit"
+      ],
+      "version": "0.11.1.41"
+    }
+  },
+  "trunkDev": {
+    "autoRevert": false
+  },
+  "extSCM": {}
+}

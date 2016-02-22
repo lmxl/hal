@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "PostalCodeJob",
+  "namespace": "com.linkedin.data.PostalCodeJob",
+  "fields": [
+    {
+      "name": "postal_code",
+      "doc": "User's postal code",
+      "type": ["string", "null"]
+    },
+    {
+      "name": "count",
+      "doc": "Count of members with that postal event that meet the proper requirements",
+      "type": ["long", "null"]
+    }
+  ]
+}

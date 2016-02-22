@@ -1,0 +1,47 @@
+apply plugin: 'li-product'
+
+buildscript {
+  dependencies {
+    classpath spec.product.'gradle-scala'.'plugins'
+  }
+}
+
+product {
+  dependencyResolution {
+    validateExternals  = false
+  }
+  codeQuality {
+    ignoreFailures = true
+  }
+}
+
+
+subprojects {
+  plugins.withType(JavaPlugin) {
+    sourceCompatibility = 1.8
+    dependencies {
+      // dependency defined in product_spec.json
+      testCompile spec.external.testng
+    }
+
+    test {
+      useTestNG()
+    }
+  }
+
+  plugins.withType(ScalaPlugin) {
+    project.apply plugin: 'li-scala-wartremover'
+
+    scalaWartRemover {
+      failOnWarnings = false
+      allWartsBut 'AsInstanceOf', 'NonUnitStatements', 'Throw'
+    }
+
+    tasks.withType(ScalaCompile) {
+      scalaCompileOptions.with {
+        additionalParameters = ['-deprecation', '-Xlint']
+      }
+    }
+  }
+}
+

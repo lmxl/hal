@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "MemberEventCountJob",
+  "namespace": "com.linkedin.data.MemberEventCountJob",
+  "fields": [
+    {
+      "name": "memberId",
+      "doc": "Upper cased version of the country code",
+      "type": ["long", "null"]
+    },
+    {
+      "name": "cnt",
+      "doc": "Count of memberIds with that event",
+      "type": ["long", "null"]
+    }
+  ]
+}

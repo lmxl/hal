@@ -1,0 +1,1740 @@
+{
+  "type" : "record",
+  "name" : "Profile_etl",
+  "namespace" : "Identity",
+  "fields" : [ {
+    "name" : "key",
+    "type" : ["null", {
+      "type" : "record",
+      "name" : "key_name",
+      "namespace" : "key_namespace",
+      "fields" : [ {
+        "name" : "Id",
+        "type" : "long",
+        "doc" : ""
+      } ]
+    }],
+    "doc" : "",
+    "attributes_json" : "{\"delta\":false,\"pk\":true}",
+    "default": null
+  }, {
+    "name" : "scn",
+    "type" : "long",
+    "doc" : "",
+    "default": 0,
+    "attributes_json" : "{\"size\":22,\"prec\":2,\"nullable\":false,\"delta\":true,\"scale\":0,\"pk\":false,\"type\":\"NUMBER\"}"
+  }, {
+    "name" : "timestamp",
+    "type" : "long",
+    "doc" : "",
+    "default" : 0,
+    "attributes_json" : "{\"delta\":false,\"pk\":false}"
+  }, {
+    "name" : "value",
+    "type" : [ {
+      "type" : "record",
+      "name" : "Profile",
+      "namespace" : "com.linkedin.identity",
+      "fields" : [ {
+        "name" : "created",
+        "type" : "long",
+        "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource",
+        "default": 0
+      }, {
+        "name" : "lastModified",
+        "type" : "long",
+        "default": 0,
+        "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+      }, {
+        "name" : "deleted",
+        "type" : [ "null", "long" ],
+        "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+        "default" : null
+      }, {
+        "name" : "id",
+        "type" : "long",
+        "doc" : "System-assigned ID for a member",
+        "default": 0
+      }, {
+        "name" : "status",
+        "type" : {
+          "type" : "enum",
+          "name" : "AccountStatus",
+          "namespace" : "com.linkedin.identity.member",
+          "symbols" : [ "ACTIVE", "CLOSED", "PURGED" ]
+        },
+        "doc" : "The member's account status",
+        "default" : "ACTIVE"
+      }, {
+        "name" : "profileAuthKey",
+        "type" : [ "null", "string" ],
+        "doc" : "Secret key generated with profile to perform generation and verification of access tokens with",
+        "default" : null
+      }, {
+        "name" : "defaultLocale",
+        "type" : ["null", {
+          "type" : "record",
+          "name" : "Locale",
+          "namespace" : "com.linkedin.common",
+          "fields" : [ {
+            "name" : "language",
+            "type" : "string",
+            "default": "eng"
+          }, {
+            "name" : "country",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "variant",
+            "type" : [ "null", "string" ],
+            "default" : null
+          } ]
+        }],
+        "doc" : "This value is assigned once at registration and then persists, being effectively write-once",
+        "default": null
+      }, {
+        "name" : "registrationLocale",
+        "type" : [ "null", "com.linkedin.common.Locale"],
+        "doc" : "This value is assigned once at registration and then persists, being effectively write-once",
+        "default": null
+      }, {
+        "name" : "supportedLocales",
+        "type" : ["null",{
+          "type" : "array",
+          "items" : "com.linkedin.common.Locale"
+        }],
+        "doc" : "Locales (including default) for which a member chose to create translations of the profile",
+        "default": null
+      }, {
+        "name" : "firstName",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "MultiLocaleString",
+          "namespace" : "com.linkedin.common",
+          "fields" : [ {
+            "name" : "localized",
+            "type" : {
+              "type" : "map",
+              "values" : "string"
+            },
+            "doc" : "Maps a locale to a localized version of the string"
+          } ]
+        }],
+        "doc" : "Localizable first name of a member",
+        "default": null
+      }, {
+        "name" : "lastName",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localizable last name of a member",
+        "default" : null
+      }, {
+        "name" : "maidenName",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localizable maiden name of a member",
+        "default" : null
+      }, {
+        "name" : "phoneticFirstName",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localizable phonetic representation of first name",
+        "default" : null
+      }, {
+        "name" : "phoneticLastName",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localizable phonetic representation of first name",
+        "default" : null
+      }, {
+        "name" : "headline",
+        "type" : ["null", "com.linkedin.common.MultiLocaleString"],
+        "doc" : "Headline of choosing to be put on profile; can be title but may also be anything that suits the purpose",
+        "default": null
+      }, {
+        "name" : "headlineTimestamps",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "ChangeTimeStamps",
+          "namespace" : "com.linkedin.common",
+          "fields" : [ {
+            "name" : "created",
+            "type" : "long",
+            "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+          }, {
+            "name" : "lastModified",
+            "type" : "long",
+            "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+          }, {
+            "name" : "deleted",
+            "type" : [ "null", "long" ],
+            "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+            "default" : null
+          } ]
+        } ],
+        "doc" : "Timestamps for headline. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "industryName",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localized name of industry as entered by member",
+        "default" : null
+      }, {
+        "name" : "industryId",
+        "type" : [ "null", "string" ],
+        "doc" : "Write-only, user-entered data, a URN from a type-ahead, 'cached' here without being an authoritative source of truth",
+        "default" : null
+      }, {
+        "name" : "location",
+        "type" : ["null" , {
+          "type" : "record",
+          "name" : "Location",
+          "namespace" : "com.linkedin.identity.member",
+          "fields" : [ {
+            "name" : "countryCode",
+            "type" : "string",
+            "doc" : "2 letter country code."
+          }, {
+            "name" : "postalCode",
+            "type" : [ "null", "string" ],
+            "default" : null
+          }, {
+            "name" : "userSelectedGeoPlaceCode",
+            "type" : [ "null", "string" ],
+            "default" : null
+          } ]
+        }],
+        "doc" : "Member's current location",
+        "default": null
+      }, {
+        "name" : "contactInstructions",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Notes on how to contact the member.",
+        "default" : null
+      }, {
+        "name" : "contactInstructionsTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for contactInstructions. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "interests",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localized write-up of interests that a member wishes to display on the profile",
+        "default" : null
+      }, {
+        "name" : "interestsTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for interests. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "maritalStatus",
+        "type" : [ "null", {
+          "type" : "enum",
+          "name" : "MaritalStatus",
+          "namespace" : "com.linkedin.identity.member",
+          "symbols" : [ "SINGLE", "MARRIED" ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "maritalStatusTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for maritalStatus. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "address",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localized address that a member wishes to display on the profile",
+        "default" : null
+      }, {
+        "name" : "addressTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for address. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "birthDate",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "Date",
+          "namespace" : "com.linkedin.common",
+          "fields" : [ {
+            "name" : "day",
+            "type" : [ "null", "int" ],
+            "default" : null
+          }, {
+            "name" : "month",
+            "type" : [ "null", "int" ],
+            "default" : null
+          }, {
+            "name" : "year",
+            "type" : [ "null", "int" ],
+            "default" : null
+          } ]
+        } ],
+        "doc" : "The birth date of a member. We modify the day-month and the year indistinctly.",
+        "default" : null
+      }, {
+        "name" : "birthDateTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for birthDate. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "phoneNumbers",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "PhoneNumber",
+            "fields" : [ {
+              "name" : "number",
+              "type" : "string",
+              "doc" : "formatting not expected"
+            }, {
+              "name" : "extension",
+              "type" : [ "null", "string" ],
+              "doc" : "formatting not expected",
+              "default" : null
+            }, {
+              "name" : "type",
+              "type" : [ "null", {
+                "type" : "enum",
+                "name" : "PhoneNumberType",
+                "namespace" : "com.linkedin.identity.member",
+                "symbols" : [ "WORK", "HOME", "MOBILE", "FAX", "PAGER" ]
+              } ],
+              "doc" : "work, home, mobile, fax, pager",
+              "default" : null
+            }, {
+              "name" : "elementId",
+              "type" : [ "null", "long" ],
+              "doc" : "legacy element id",
+              "default" : null
+            } ]
+          }
+        } ],
+        "default" : null
+      }, {
+        "name" : "phoneNumbersTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for phoneNumbers. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "websites",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "Website",
+            "fields" : [ {
+              "name" : "category",
+              "type" : {
+                "type" : "enum",
+                "name" : "WebsiteCategory",
+                "namespace" : "com.linkedin.identity.member",
+                "symbols" : [ "PERSONAL", "COMPANY", "BLOG", "RSS", "PORTFOLIO", "OTHER" ]
+              }
+            }, {
+              "name" : "label",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "localized label user chose for a website in 'Other' category",
+              "default" : null
+            }, {
+              "name" : "url",
+              "type" : {
+                "type" : "record",
+                "name" : "MultiLocaleUrl",
+                "namespace" : "com.linkedin.common",
+                "fields" : [ {
+                  "name" : "localized",
+                  "type" : {
+                    "type" : "map",
+                    "values" : "string"
+                  },
+                  "doc" : "Maps a locale to a localized version of the Url"
+                } ]
+              },
+              "doc" : "Localized URLs for a website"
+            }, {
+              "name" : "elementId",
+              "type" : [ "null", "long" ],
+              "doc" : "legacy element id",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Localized websites member wants displayed on the profile",
+        "default" : null
+      }, {
+        "name" : "websitesTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for websites. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "ims",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "IM",
+            "fields" : [ {
+              "name" : "id",
+              "type" : "string"
+            }, {
+              "name" : "provider",
+              "type" : "string",
+              "doc" : "AOL, GoogleTalk, Jabber, Skype, YIM, or customized"
+            }, {
+              "name" : "type",
+              "type" : [ "null", {
+                "type" : "enum",
+                "name" : "IMType",
+                "namespace" : "com.linkedin.identity.member",
+                "symbols" : [ "PRIMARY", "PERSONAL", "WORK" ]
+              } ],
+              "doc" : "primary, work, personal",
+              "default" : null
+            }, {
+              "name" : "elementId",
+              "type" : [ "null", "long" ],
+              "doc" : "legacy element id",
+              "default" : null
+            } ]
+          }
+        } ],
+        "default" : null
+      }, {
+        "name" : "imsTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for ims. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "imsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "string"
+        } ],
+        "doc" : "IMs intra-section order.",
+        "default" : null
+      }, {
+        "name" : "pictureInfo",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "PictureInfo",
+          "fields" : [ {
+            "name" : "created",
+            "type" : "long",
+            "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+          }, {
+            "name" : "lastModified",
+            "type" : "long",
+            "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+          }, {
+            "name" : "deleted",
+            "type" : [ "null", "long" ],
+            "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+            "default" : null
+          }, {
+            "name" : "croppedImage",
+            "type" : "string"
+          }, {
+            "name" : "masterImage",
+            "type" : "string"
+          }, {
+            "name" : "changeCount",
+            "type" : [ "int", "null" ],
+            "default" : 0
+          }, {
+            "name" : "abuseCount",
+            "type" : [ "int", "null" ],
+            "default" : 0
+          }, {
+            "name" : "state",
+            "type" : [ {
+              "type" : "enum",
+              "name" : "PictureState",
+              "namespace" : "com.linkedin.identity.member",
+              "symbols" : [ "ACTIVE", "DELETED", "ABUSIVE", "QUESTIONED" ]
+            }, "null" ],
+            "default" : "ACTIVE"
+          }, {
+            "name" : "hidden",
+            "type" : [ "boolean", "null" ],
+            "default" : false
+          }, {
+            "name" : "cropInfo",
+            "type" : {
+              "type" : "record",
+              "name" : "PictureCropInfo",
+              "namespace" : "com.linkedin.identity.member",
+              "fields" : [ {
+                "name" : "x",
+                "type" : "int",
+                "doc" : "X coordinate of upper-left corner of the cropped area (upper-left corner of image is 0)"
+              }, {
+                "name" : "y",
+                "type" : "int",
+                "doc" : "Y coordinate of upper-left corner of the cropped area (upper-left corner of image is 0)"
+              }, {
+                "name" : "width",
+                "type" : "int"
+              }, {
+                "name" : "height",
+                "type" : "int"
+              } ]
+            }
+          }, {
+            "name" : "contentCertificationToken",
+            "type" : [ "null", "string" ],
+            "doc" : "Content Certification Token used for member picture filtering in profile",
+            "default" : null
+          } ]
+        } ],
+        "default" : null
+      }, {
+        "name" : "summary",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "MultiLocaleRichText",
+          "namespace" : "com.linkedin.common",
+          "fields" : [ {
+            "name" : "localized",
+            "type" : {
+              "type" : "map",
+              "values" : {
+                "type" : "record",
+                "name" : "RichText",
+                "fields" : [ {
+                  "name" : "rawText",
+                  "type" : [ "null", "string" ],
+                  "default" : null
+                }, {
+                  "name" : "rtData",
+                  "type" : [ {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "record",
+                      "name" : "RTData",
+                      "fields" : [ {
+                        "name" : "type",
+                        "type" : "string"
+                      }, {
+                        "name" : "startIdx",
+                        "type" : "int"
+                      }, {
+                        "name" : "endIdx",
+                        "type" : "int"
+                      }, {
+                        "name" : "attribute",
+                        "type" : [ {
+                          "type" : "array",
+                          "items" : {
+                            "type" : "record",
+                            "name" : "RTAttribute",
+                            "fields" : [ {
+                              "name" : "name",
+                              "type" : "string"
+                            }, {
+                              "name" : "value",
+                              "type" : "string"
+                            } ]
+                          }
+                        }, "null" ],
+                        "default" : [ ]
+                      } ]
+                    }
+                  }, "null" ],
+                  "default" : [ ]
+                } ]
+              }
+            },
+            "doc" : "Maps a locale to a localized version of the text"
+          } ]
+        } ],
+        "doc" : "This field supports multiple locales",
+        "default" : null
+      }, {
+        "name" : "summaryTimestamps",
+        "type" : [ "null", "com.linkedin.common.ChangeTimeStamps" ],
+        "doc" : "Timestamps for summary. Field added to support Teradata warehouse",
+        "default" : null
+      }, {
+        "name" : "summaryRichMediaAssociations",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "RichMediaAssociation",
+            "fields" : [ {
+              "name" : "richMedia",
+              "type" : "string",
+              "doc" : "Rich media handle."
+            } ]
+          }
+        } ],
+        "doc" : "Rich media associated with the member's summary.",
+        "default" : null
+      }, {
+        "name" : "topLevelSectionOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "string"
+        } ],
+        "doc" : "Inter-section ordering based on profile owner preferences and business logic rules. Values should be from the enumeration as defined in ProfileSectionName.pdsc",
+        "default" : null
+      }, {
+        "name" : "positions",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Position",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "title",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "startMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "endMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "locationName",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "location",
+              "type" : [ "null", {
+                "type" : "record",
+                "name" : "PositionLocation",
+                "namespace" : "com.linkedin.identity.member",
+                "fields" : [ {
+                  "name" : "countryCode",
+                  "type" : "string",
+                  "doc" : "2 letter country code. But there is a bug that the position location name is stored here. Check bug CORE-35777"
+                }, {
+                  "name" : "regionCode",
+                  "type" : [ "null", "int" ],
+                  "default" : null
+                } ]
+              } ],
+              "doc" : "Location for the position",
+              "default" : null
+            }, {
+              "name" : "companyName",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "Company name as entered by a user",
+              "default" : null
+            }, {
+              "name" : "company",
+              "type" : [ "null", "string" ],
+              "doc" : "Write-only, user-entered data from type-ahead",
+              "default" : null
+            }, {
+              "name" : "richMediaAssociations",
+              "type" : [ "null", {
+                "type" : "array",
+                "items" : "RichMediaAssociation"
+              } ],
+              "doc" : "Rich media associated with the member's position.",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Employment history",
+        "default" : null
+      }, {
+        "name" : "positionsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Positions intra-section order.",
+        "default" : null
+      }, {
+        "name" : "educations",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Education",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "schoolName",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "School name as entered by a user",
+              "default" : null
+            }, {
+              "name" : "school",
+              "type" : [ "null", "string" ],
+              "doc" : "Write-only, user-entered URN from a typeahead",
+              "default" : null
+            }, {
+              "name" : "fieldsOfStudy",
+              "type" : [ "null", {
+                "type" : "array",
+                "items" : {
+                  "type" : "record",
+                  "name" : "FieldOfStudy",
+                  "namespace" : "com.linkedin.identity.member",
+                  "fields" : [ {
+                    "name" : "fieldOfStudyName",
+                    "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+                    "doc" : "Field of study/major",
+                    "default" : null
+                  }, {
+                    "name" : "fieldOfStudy",
+                    "type" : [ "null", "string" ],
+                    "doc" : "Write-only user entered URN of field of study, from typeahead",
+                    "default" : null
+                  }, {
+                    "name" : "grade",
+                    "type" : [ "null", {
+                      "type" : "record",
+                      "name" : "Grade",
+                      "fields" : [ {
+                        "name" : "grade",
+                        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+                        "doc" : "This field supports multiple locales",
+                        "default" : null
+                      }, {
+                        "name" : "gradeScale",
+                        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+                        "doc" : "This field supports multiple locales",
+                        "default" : null
+                      } ]
+                    } ],
+                    "doc" : "Grade attained in the area of study",
+                    "default" : null
+                  }, {
+                    "name" : "commitmentLevel",
+                    "type" : [ "null", {
+                      "type" : "enum",
+                      "name" : "FosCommitment",
+                      "symbols" : [ "MAJOR", "PRIMARY", "MINOR", "SECONDARY", "VOCATIONAL", "OTHER" ]
+                    } ],
+                    "doc" : "Major| secondary| etc.",
+                    "default" : null
+                  } ]
+                }
+              } ],
+              "doc" : "Degrees achieved in respective fields of study",
+              "default" : null
+            }, {
+              "name" : "grade",
+              "type" : [ "null", "com.linkedin.identity.member.Grade" ],
+              "doc" : "Grade attained in a study for",
+              "default" : null
+            }, {
+              "name" : "degreeName",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "Degree attained in a study",
+              "default" : null
+            }, {
+              "name" : "degree",
+              "type" : [ "null", "string" ],
+              "doc" : "Write-only user-entered URN from a type-ahead",
+              "default" : null
+            }, {
+              "name" : "startMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "endMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "activities",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "notes",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "richMediaAssociations",
+              "type" : [ "null", {
+                "type" : "array",
+                "items" : "RichMediaAssociation"
+              } ],
+              "doc" : "Rich media associated with the member's education.",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Education history",
+        "default" : null
+      }, {
+        "name" : "educationsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Educations intra-section order.",
+        "default" : null
+      }, {
+        "name" : "skills",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Skill",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long",
+              "doc" : "Identifier of this sub-entity, unique within the scope of its parent document"
+            }, {
+              "name" : "name",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "Skill name as defined by a user"
+            }, {
+              "name" : "skill",
+              "type" : [ "null", "string" ],
+              "doc" : "Write-only, user-entered data from type-ahead",
+              "default" : null
+            }, {
+              "name" : "proficiency",
+              "type" : [ "null", {
+                "type" : "enum",
+                "name" : "SkillProficiency",
+                "namespace" : "com.linkedin.identity.member",
+                "symbols" : [ "BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT" ]
+              } ],
+              "default" : null
+            }, {
+              "name" : "yearsOfExperience",
+              "type" : [ "null", "int" ],
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Skills member chooses to display",
+        "default" : null
+      }, {
+        "name" : "skillsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Skills intra-section order.",
+        "default" : null
+      }, {
+        "name" : "languages",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Language",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "name",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "proficiency",
+              "type" : [ "null", {
+                "type" : "enum",
+                "name" : "LanguageProficiency",
+                "namespace" : "com.linkedin.identity.member",
+                "symbols" : [ "ELEMENTARY", "LIMITED_WORKING", "PROFESSIONAL_WORKING", "FULL_PROFESSIONAL", "NATIVE_OR_BILINGUAL" ]
+              } ],
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Spoken (or otherwise) languages the member claims knowledge of",
+        "default" : null
+      }, {
+        "name" : "languagesOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Languages intra-section order.",
+        "default" : null
+      }, {
+        "name" : "certifications",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Certification",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "name",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "licenseNumber",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "authority",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "company",
+              "type" : [ "null", "string" ],
+              "doc" : "Write-only, user-entered data from type-ahead",
+              "default" : null
+            }, {
+              "name" : "url",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "startMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "endMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Certifications a member wants displayed",
+        "default" : null
+      }, {
+        "name" : "certificationsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Certifications intra-section order.",
+        "default" : null
+      }, {
+        "name" : "publications",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Publication",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "name",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "publisher",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "authors",
+              "type" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "record",
+                  "name" : "Contributor",
+                  "namespace" : "com.linkedin.identity.member",
+                  "fields" : [ {
+                    "name" : "id",
+                    "type" : "long",
+                    "doc" : "The id of this contributor object, just like each publication/project has its own id, each contributor does too."
+                  }, {
+                    "name" : "memberId",
+                    "type" : [ "null", "string" ],
+                    "doc" : "The memberID of this contributor",
+                    "default" : null
+                  }, {
+                    "name" : "name",
+                    "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+                    "doc" : "This field supports multiple locales",
+                    "default" : null
+                  } ]
+                }
+              }
+            }, {
+              "name" : "url",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "date",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Published works a member has co-authored",
+        "default" : null
+      }, {
+        "name" : "publicationsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Publications intra-section order.",
+        "default" : null
+      }, {
+        "name" : "patents",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Patent",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "number",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "default" : null
+            }, {
+              "name" : "applicationNumber",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "default" : null
+            }, {
+              "name" : "title",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "issuer",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "pending",
+              "type" : "boolean"
+            }, {
+              "name" : "url",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "filingDate",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "issueDate",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "inventors",
+              "type" : {
+                "type" : "array",
+                "items" : "com.linkedin.identity.member.Contributor"
+              }
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Patents a member has in his/her name",
+        "default" : null
+      }, {
+        "name" : "patentsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Patents intra-section order.",
+        "default" : null
+      }, {
+        "name" : "projects",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Project",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "title",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "members",
+              "type" : {
+                "type" : "array",
+                "items" : "com.linkedin.identity.member.Contributor"
+              }
+            }, {
+              "name" : "startMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "endMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "url",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "occupation",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "singleDate",
+              "type" : [ "null", "boolean" ],
+              "doc" : "Distinguishes between an ongoing Project without an end date and a Project which occurred at one specific time",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Projects a member has accomplished",
+        "default" : null
+      }, {
+        "name" : "projectsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Projects intra-section order.",
+        "default" : null
+      }, {
+        "name" : "organizations",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Organization",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "name",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "startMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "endMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "position",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "occupation",
+              "type" : [ "null", "string" ],
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Professional associations",
+        "default" : null
+      }, {
+        "name" : "organizationsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Organizations intra-section order.",
+        "default" : null
+      }, {
+        "name" : "courses",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Course",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "number",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "occupation",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "name",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            } ]
+          }
+        } ],
+        "doc" : "Courses a member has taken (as part of full-time or continuing education)",
+        "default" : null
+      }, {
+        "name" : "coursesOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Courses intra-section order.",
+        "default" : null
+      }, {
+        "name" : "honors",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "Honor",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "title",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "issueDate",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "occupation",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "issuer",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+              "default" : null
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Honors a member has received",
+        "default" : null
+      }, {
+        "name" : "honorsOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Honors intra-section order.",
+        "default" : null
+      }, {
+        "name" : "volunteeringExperiences",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "VolunteeringExperience",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "companyName",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "Company name as entered by a user"
+            }, {
+              "name" : "company",
+              "type" : [ "null", "string" ],
+              "doc" : "Write-only, user-entered data from type-ahead",
+              "default" : null
+            }, {
+              "name" : "role",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "cause",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "startMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "endMonthYear",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            }, {
+              "name" : "singleDate",
+              "type" : [ "null", "boolean" ],
+              "doc" : "Distinguishes between an ongoing VolunteeringExperience without an end date and a VolunteeringExperience which occurred at one specific time",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Organizations for which a member has volunteering experience",
+        "default" : null
+      }, {
+        "name" : "volunteeringExperiencesOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "Volunteering experiences intra-section order.",
+        "default" : null
+      }, {
+        "name" : "volunteeringInterests",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "VolunteeringInterests",
+          "fields" : [ {
+            "name" : "supportedPredefinedCauses",
+            "type" : [ "null", {
+              "type" : "array",
+              "items" : {
+                "type" : "enum",
+                "name" : "VolunteeringPredefinedCause",
+                "namespace" : "com.linkedin.identity.member",
+                "symbols" : [ "animalRights", "artsAndCulture", "children", "civilRights", "economicEmpowerment", "education", "environment", "health", "humanRights", "humanitarianRelief", "politics", "povertyAlleviation", "scienceAndTechnology", "socialServices" ]
+              }
+            } ],
+            "default" : null
+          }, {
+            "name" : "supportedUserDefinedCauses",
+            "type" : [ "null", {
+              "type" : "array",
+              "items" : "com.linkedin.common.MultiLocaleString"
+            } ],
+            "default" : null
+          }, {
+            "name" : "supportedNonprofits",
+            "type" : [ "null", {
+              "type" : "array",
+              "items" : {
+                "type" : "record",
+                "name" : "SupportedNonprofit",
+                "fields" : [ {
+                  "name" : "companyName",
+                  "type" : "com.linkedin.common.MultiLocaleString"
+                }, {
+                  "name" : "companyId",
+                  "type" : [ "null", "string" ],
+                  "doc" : "Write-only, user-entered data from type-ahead",
+                  "default" : null
+                } ]
+              }
+            } ],
+            "default" : null
+          }, {
+            "name" : "proBonoInterest",
+            "type" : [ "null", "boolean" ],
+            "default" : null
+          }, {
+            "name" : "boardMemberInterest",
+            "type" : [ "null", "boolean" ],
+            "default" : null
+          } ]
+        } ],
+        "doc" : "Volunteering interests that a member has or supports",
+        "default" : null
+      }, {
+        "name" : "testScores",
+        "type" : [ "null", {
+          "type" : "map",
+          "values" : {
+            "type" : "record",
+            "name" : "TestScore",
+            "fields" : [ {
+              "name" : "created",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+            }, {
+              "name" : "lastModified",
+              "type" : "long",
+              "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+            }, {
+              "name" : "deleted",
+              "type" : [ "null", "long" ],
+              "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+              "default" : null
+            }, {
+              "name" : "id",
+              "type" : "long"
+            }, {
+              "name" : "name",
+              "type" : "com.linkedin.common.MultiLocaleString",
+              "doc" : "This field supports multiple locales"
+            }, {
+              "name" : "date",
+              "type" : [ "null", "com.linkedin.common.Date" ],
+              "default" : null
+            }, {
+              "name" : "occupation",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "score",
+              "type" : [ "null", "string" ],
+              "default" : null
+            }, {
+              "name" : "description",
+              "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+              "doc" : "This field supports multiple locales",
+              "default" : null
+            } ]
+          }
+        } ],
+        "doc" : "Measures of academic success a member wants displayed",
+        "default" : null
+      }, {
+        "name" : "testScoresOrder",
+        "type" : [ "null", {
+          "type" : "array",
+          "items" : "long"
+        } ],
+        "doc" : "TestScores intra-section order.",
+        "default" : null
+      }, {
+        "name" : "specialties",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localized description of specialties (deprecated in favor of skills)",
+        "default" : null
+      }, {
+        "name" : "legacyHonors",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleRichText" ],
+        "doc" : "Localized description of honors and awards (deprecated in favor of honors)",
+        "default" : null
+      }, {
+        "name" : "associations",
+        "type" : [ "null", "com.linkedin.common.MultiLocaleString" ],
+        "doc" : "Localized description of organizations and associations (deprecated in favor of organizations)",
+        "default" : null
+      }, {
+        "name" : "migrationControl",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "ProfileMigrationControl",
+          "namespace" : "com.linkedin.identity.internal",
+          "fields" : [ {
+            "name" : "memberProfileState",
+            "type" : [ "null", {
+              "type" : "record",
+              "name" : "MigrationState",
+              "fields" : [ {
+                "name" : "version",
+                "type" : "long",
+                "doc" : "the version of the section/flex portion of the profile",
+                "default" : 0
+              }, {
+                "name" : "sot",
+                "type" : "string",
+                "doc" : "'source of truth': single-character token signifying whether ISB ('I') or legacy Oracle ('O') is the source of truth for this record; empty or null value is to be treated equivalently to 'O'"
+              } ]
+            } ],
+            "doc" : "migration state of member2 member profile record",
+            "default" : null
+          }, {
+            "name" : "memberAccountState",
+            "type" : [ "null", "MigrationState" ],
+            "doc" : "migration state of member2 member account record",
+            "default" : null
+          }, {
+            "name" : "profileSectionsState",
+            "type" : [ "null", "MigrationState" ],
+            "doc" : "migration state of profile sections (flex) record",
+            "default" : null
+          }, {
+            "name" : "memberPictureState",
+            "type" : [ "null", "MigrationState" ],
+            "doc" : "migration state of member picture record",
+            "default" : null
+          } ]
+        } ],
+        "doc" : "migration control for Profile document.",
+        "default" : null
+      }, {
+        "name" : "backgroundImage",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "BackgroundImage",
+          "fields" : [ {
+            "name" : "created",
+            "type" : "long",
+            "doc" : "A timestamp corresponding to the creation of this resource/association/sub-resource"
+          }, {
+            "name" : "lastModified",
+            "type" : "long",
+            "doc" : "A timestamp corresponding to the last modification of this resource/association/sub-resource. If no modification has happened since creation, lastModified should be the same as created"
+          }, {
+            "name" : "deleted",
+            "type" : [ "null", "long" ],
+            "doc" : "A timestamp corresponding to the deletion of this resource/association/sub-resource. Logically, deleted MUST have a later timestamp than creation. It may or may not have the same time as lastModified depending upon the resource/association/sub-resource semantics.",
+            "default" : null
+          }, {
+            "name" : "pictureId",
+            "type" : [ "null", "string" ],
+            "doc" : "The URN of the background image",
+            "default" : null
+          }, {
+            "name" : "changeCount",
+            "type" : [ "int", "null" ],
+            "default" : 0
+          }, {
+            "name" : "customUpload",
+            "type" : [ "null", "boolean" ],
+            "doc" : "True if the image was a member upload, false if this is stock image",
+            "default" : null
+          }, {
+            "name" : "cropInfo",
+            "type" : [ "null", "com.linkedin.identity.member.PictureCropInfo" ],
+            "doc" : "Stores the top-Y for member uploaded, repositioned images",
+            "default" : null
+          }, {
+            "name" : "contentCertificationToken",
+            "type" : [ "null", "string" ],
+            "doc" : "Content Certification Token used for background image filtering in profile",
+            "default" : null
+          } ]
+        } ],
+        "doc" : "The background image for Premium Profile.",
+        "default" : null
+      }, {
+        "name" : "weChatContactInfo",
+        "type" : [ "null", {
+          "type" : "record",
+          "name" : "WeChatContactInfo",
+          "fields" : [ {
+            "name" : "name",
+            "type" : "string",
+            "doc" : "WeChat nick name"
+          }, {
+            "name" : "qr",
+            "type" : "string",
+            "doc" : "WeChat QR image url"
+          } ]
+        } ],
+        "doc" : "the LinkedIn member's WeChat contact info",
+        "default" : null
+      }, {
+        "name" : "contentCertificationToken",
+        "type" : [ "null", "string" ],
+        "doc" : "Content Certification Token used for content filtering in profile",
+        "default" : null
+      }, {
+        "name" : "rawResume",
+        "type" : [ "null", "string" ],
+        "doc" : "ambry urn of the raw resume that is uploaded by the member",
+        "default" : null
+      }, {
+        "name" : "vanityName",
+        "type" : [ "null", "string" ],
+        "doc" : "The custom vanity name for the member.",
+        "default" : null
+      } ]
+    }, "null" ],
+    "doc" : "",
+    "attributes_json" : "{\"delta\":false,\"pk\":false}"
+  }, {
+    "name" : "operation",
+    "type" : ["null",{
+      "type" : "enum",
+      "name" : "op",
+      "symbols" : [ "UPSERT", "DELETE" ]
+    }],
+    "doc" : "",
+    "default": null,
+    "attributes_json" : "{\"delta\":false,\"pk\":false}"
+  }, {
+    "name" : "partitionId",
+    "type" : "int",
+    "doc" : "",
+    "default": 0,
+    "attributes_json" : "{\"delta\":false,\"pk\":false}"
+  }, {
+    "name" : "transactionOrder",
+    "type" : "long",
+    "doc" : "",
+    "default" : 0,
+    "attributes_json" : "{\"delta\":false,\"pk\":false,\"aux_delta\":true}"
+  }, {
+    "name" : "deleted_ts",
+    "type" : [ "null", "long" ],
+    "doc" : "",
+    "default" : null,
+    "attributes_json" : "{\"size\":11,\"nullable\":true,\"delta\":false,\"scale\":6,\"pk\":false,\"type\":\"TIMESTAMP\"}"
+  } ],
+  "attributes_json" : "{\"dumpdate\":1440349199999,\"isFull\":false,\"begin_date\":1440345600000,\"end_date\":1440349199999,\"total_records\":-1,\"oracle_scn\":-1,\"oracle_time\":-1,\"db_name\":\"Identity\",\"table_name\":\"Profile\",\"min_scn\":-1,\"partition_id\":-1,\"document_version\":12,\"datasource_colo\":\"prod-ela4\",\"instance\":\"Espresso\",\"key\":\"key\",\"validation_high_water\":-1,\"validation_drop_date\":-1,\"deleted_records\":0,\"full_dropdate\":1440015664158,\"base_dropdate\":1440320399999,\"lumos_operation\":\"QSB\",\"lumos_process_time\":1440376921315}"
+}

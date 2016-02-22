@@ -1,0 +1,349 @@
+{
+  "type": "record", 
+  "name": "MEMBER_ACCOUNT", 
+  "fields": [
+    {
+      "default": 0, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":true,\"nullable\":false}", 
+      "type": "long", 
+      "name": "MEMBER_ID"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":true,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "TXN"
+    }, 
+    {
+      "default": 0, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"TIMESTAMP\",\"size\":11,\"scale\":6,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "long", 
+      "name": "CREATED_DATE"
+    }, 
+    {
+      "default": 0, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"TIMESTAMP\",\"size\":11,\"scale\":6,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "long", 
+      "name": "MODIFIED_DATE"
+    }, 
+    {
+      "default": "", 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"CHAR\",\"size\":1,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "string", 
+      "name": "IS_ACTIVE"
+    }, 
+    {
+      "default": 0, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "long", 
+      "name": "LINKEDIN_GENERATION_NUM"
+    }, 
+    {
+      "default": 0, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "long", 
+      "name": "INDUSTRY_ID"
+    }, 
+    {
+      "default": 0, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"DATE\",\"size\":7,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "long", 
+      "name": "REGISTRATION_DATE"
+    }, 
+    {
+      "default": "", 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":60,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "string", 
+      "name": "REGISTRATION_FIRST_NAME"
+    }, 
+    {
+      "default": "", 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":120,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "string", 
+      "name": "REGISTRATION_LAST_NAME"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":120,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "REGISTRATION_MAIDEN_NAME"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "SUBSCRIBER_LEVEL"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"DATE\",\"size\":7,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "SUBSCRIBER_UNTIL"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "INVITER_MEMBER_ID"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":45,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "JOIN_IP"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "USER_CATEGORY"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "COBRAND_GROUP_ID"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":20,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "CPA_CODE"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"CHAR\",\"size\":2,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "COUNTRY_CODE"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":10,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "POSTAL_CODE"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":10,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "GEO_POSTAL_CODE"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":40,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "GEO_PLACE_CODE"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":4,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "double"
+      ], 
+      "name": "LATITUDE_DEG"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":4,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "double"
+      ], 
+      "name": "LONGITUDE_DEG"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "REGION_CODE"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "double"
+      ], 
+      "name": "GMT_OFFSET"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"CHAR\",\"size\":1,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "USES_DAYLIGHT_SAVINGS"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":300,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "CITY"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"CHAR\",\"size\":5,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "DEFAULT_LOCALE"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"CHAR\",\"size\":1,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "IS_PURGED"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"TIMESTAMP\",\"size\":11,\"scale\":6,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "GG_MODI_TS"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":1,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "GG_STATUS"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"VARCHAR2\",\"size\":1,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "string"
+      ], 
+      "name": "SOURCE_OF_TRUTH"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":22,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "MIGRATION_CONTROL_VERSION"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"TIMESTAMP\",\"size\":11,\"scale\":6,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "long"
+      ], 
+      "name": "DELETED_TS"
+    }, 
+    {
+      "default": null, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"RAW\",\"size\":16,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":true}", 
+      "type": [
+        "null", 
+        "bytes"
+      ], 
+      "name": "JOIN_IPV6"
+    }, 
+    {
+      "default": 0, 
+      "doc": "", 
+      "attributes_json": "{\"type\":\"NUMBER\",\"size\":0,\"scale\":0,\"delta\":false,\"pk\":false,\"nullable\":false}", 
+      "type": "long", 
+      "name": "lumos_dropdate"
+    }
+  ], 
+  "doc": "", 
+  "attributes_json": "{\"instance\":\"PMEM2\",\"dumpdate\":\"20150310090743\",\"isFull\":false,\"begin_date\":7513187694,\"end_date\":7513663307,\"total_records\":401698024,\"oracle_scn\":\"\",\"oracle_time\":-1,\"isSharded\":false,\"isSecured\":false,\"permission_group\":\"\",\"validation_high_water\":7490935020,\"validation_drop_date\":1425777967000,\"full_dropdate\":1389938869000,\"base_dropdate\":1425926036000,\"lumos_operation\":\"QSB\",\"lumos_process_time\":1425987931517}", 
+  "namespace": "com.linkedin.data.MemberAccount"
+}

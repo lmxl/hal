@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "CountByCountryJob",
+  "namespace": "com.linkedin.data.CountByCountryJob",
+  "fields": [
+    {
+      "name": "upperCountryCode",
+      "doc": "Upper cased version of the country code",
+      "type": ["string", "null"]
+    },
+    {
+      "name": "cnt",
+      "doc": "Count of number of country code",
+      "type": ["long", "null"]
+    }
+  ]
+}

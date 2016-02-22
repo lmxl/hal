@@ -1,0 +1,331 @@
+{
+  "type": "record", 
+  "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+  "name": "EndorsementsEndorseEvent", 
+  "fields": [
+    {
+      "type": {
+        "type": "record", 
+        "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+        "name": "EventHeader", 
+        "fields": [
+          {
+            "doc": "The LinkedIn member ID of the user initiating the action.  LinkedIn member IDs are integers greater than zero.  Guests are represented either as zero or a negative number.", 
+            "type": "int", 
+            "name": "memberId"
+          }, 
+          {
+            "default": null, 
+            "doc": "The LinkedIn URN of the user initiating the action.  For other applications like Slideshare, this should be filled in when the LinkedIn member URN is actually known.  The LinkedIn member URN would be known, for example, when the user has linked their Slideshare account with their LinkedIn account.", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "viewerUrn"
+          }, 
+          {
+            "default": null, 
+            "doc": "The Application URN of the user initiating the action.  This URN identifies the member within the particular application that the member is using, which may or may not be LinkedIn.  If the user is interacting with LinkedIn then this should be the LinkedIn URN, the same as viewerUrn.  If the member is interacting with a different site, such as Slideshare, then this should be the URN identifying the member in that site.", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "applicationViewerUrn"
+          }, 
+          {
+            "doc": "The time of the event", 
+            "type": "long", 
+            "name": "time"
+          }, 
+          {
+            "doc": "The name of the server", 
+            "type": "string", 
+            "name": "server"
+          }, 
+          {
+            "doc": "The name of the service. Synonymous to the com.linkedin.events.monitoring.EventHeader#container field.", 
+            "type": "string", 
+            "name": "service"
+          }, 
+          {
+            "default": "", 
+            "doc": "The environment the service is running in", 
+            "type": [
+              "string", 
+              "null"
+            ], 
+            "name": "environment"
+          }, 
+          {
+            "doc": "A unique identifier for the message", 
+            "type": {
+              "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+              "type": "fixed", 
+              "name": "Guid", 
+              "size": 16
+            }, 
+            "name": "guid"
+          }, 
+          {
+            "default": null, 
+            "doc": "Service call tree uuid", 
+            "type": [
+              "null", 
+              {
+                "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+                "type": "fixed", 
+                "name": "fixed_16", 
+                "size": 16
+              }
+            ], 
+            "name": "treeId"
+          }, 
+          {
+            "default": null, 
+            "doc": "Service call request id", 
+            "type": [
+              "null", 
+              "int"
+            ], 
+            "name": "requestId"
+          }, 
+          {
+            "default": null, 
+            "doc": "this is the ID of the CS Agent or Application acting on the users behalf", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "impersonatorId"
+          }, 
+          {
+            "default": null, 
+            "doc": "Synonymous to the com.linkedin.events.monitoring.EventHeader#version field. The version that the service which emitted this event was at. For services in multiproducts, this usually comes in the form of {major}.{minor}.{micro} (eg. 0.1.2), however for network services, the version follows a format like so: 0.0.2000-RC8.35047", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "version"
+          }, 
+          {
+            "default": null, 
+            "doc": "Synonymous to the com.linkedin.events.monitoring.EventHeader#instance field. The instance ID of the service (eg. i001)", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "instance"
+          }, 
+          {
+            "default": null, 
+            "doc": "Synonymous to the com.linkedin.events.monitoring.EventHeader#service field. Named 'appName' here since this is what this field actually represents, and 'service' is already used. This is also synonymous to 'appName' in Play and network apps, where on a typical page there would be a <meta name=appName content=biz> tag. For network apps, this would be the container name without the '-tomcat' suffix. So for 'profile-tomcat', it would just be 'profile'. For Play! services, it would just be the container name, such as 'polls-frontend'. For additional information, please see the wiki at go/appname", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "appName"
+          }, 
+          {
+            "default": null, 
+            "doc": "A client provided ID that uniquely identifies a particular execution of a test case.  This ID is provided by clients through an ENG_TEST_ID cookie.  The Selenium test framework automatically sets this cookie for each request.  This will be null when there is no ENG_TEST_ID provided.  See https://iwww.corp.linkedin.com/wiki/cf/display/ENGS/Selenium+Framework+Architecture+Documentation for more details on the test framework.  See https://iwww.corp.linkedin.com/wiki/cf/display/ENGS/Improving+Automated+Testability+of+Tracking+Events for details on the motiviation behind adding this test ID to the header and how it is used.", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "testId"
+          }, 
+          {
+            "default": null, 
+            "doc": "A client provided ID that uniquely identifies a section of the testing code from a  particular execution of a test case.  This ID is provided by clients through an ENG_TEST_SEGMENT_ID cookie. ", 
+            "type": [
+              "null", 
+              "string"
+            ], 
+            "name": "testSegmentId"
+          }
+        ]
+      }, 
+      "name": "header"
+    }, 
+    {
+      "doc": "the location where the endorsing occurred (e.g. page key and module)", 
+      "type": "string", 
+      "name": "location"
+    }, 
+    {
+      "doc": "indicates the model used to suggest the endorsement, if it was suggested", 
+      "type": [
+        "string", 
+        "null"
+      ], 
+      "name": "model"
+    }, 
+    {
+      "type": {
+        "items": {
+          "type": "record", 
+          "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+          "name": "Endorsement", 
+          "fields": [
+            {
+              "doc": "an id uniquely identifying this endorsement in the database, if it exists", 
+              "type": [
+                "long", 
+                "null"
+              ], 
+              "name": "id"
+            }, 
+            {
+              "doc": "the entity doing the endorsing", 
+              "type": [
+                {
+                  "type": "record", 
+                  "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+                  "name": "IdentifiableEntity", 
+                  "fields": [
+                    {
+                      "doc": "id of the entity", 
+                      "type": "long", 
+                      "name": "id"
+                    }, 
+                    {
+                      "doc": "type of the entity", 
+                      "type": {
+                        "symbols": [
+                          "member", 
+                          "question", 
+                          "group", 
+                          "article", 
+                          "job", 
+                          "company", 
+                          "prospect", 
+                          "skill", 
+                          "school"
+                        ], 
+                        "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+                        "type": "enum", 
+                        "name": "Entity"
+                      }, 
+                      "name": "type"
+                    }
+                  ]
+                }, 
+                "null"
+              ], 
+              "name": "endorser"
+            }, 
+            {
+              "doc": "the entity the endorsement was for", 
+              "type": "com.linkedin.data.EndorsementsEndorseEvent.IdentifiableEntity", 
+              "name": "recipient"
+            }, 
+            {
+              "doc": "the item the recipient is to be endorsed for", 
+              "type": [
+                {
+                  "type": "record", 
+                  "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+                  "name": "NamedEntity", 
+                  "fields": [
+                    {
+                      "doc": "id of the entity", 
+                      "type": [
+                        "long", 
+                        "null"
+                      ], 
+                      "name": "id"
+                    }, 
+                    {
+                      "doc": "name of the entity", 
+                      "type": [
+                        "string", 
+                        "null"
+                      ], 
+                      "name": "name"
+                    }, 
+                    {
+                      "doc": "type of the entity", 
+                      "type": "com.linkedin.data.EndorsementsEndorseEvent.Entity", 
+                      "name": "type"
+                    }
+                  ]
+                }, 
+                "null"
+              ], 
+              "name": "endorsedItem"
+            }, 
+            {
+              "default": "UNKNOWN", 
+              "doc": "the status of the endorsement", 
+              "type": {
+                "symbols": [
+                  "UNKNOWN", 
+                  "ACCEPTED", 
+                  "REJECTED", 
+                  "HIDDEN", 
+                  "PENDING", 
+                  "DELETED", 
+                  "CLOSED"
+                ], 
+                "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+                "type": "enum", 
+                "name": "EndorsementStatus"
+              }, 
+              "name": "endorsementStatus"
+            }, 
+            {
+              "default": null, 
+              "doc": "The locale of the endorsement", 
+              "type": [
+                "null", 
+                {
+                  "type": "record", 
+                  "namespace": "com.linkedin.data.EndorsementsEndorseEvent",
+                  "name": "Locale", 
+                  "fields": [
+                    {
+                      "doc": "The Language field of Locale.", 
+                      "type": [
+                        "null", 
+                        "string"
+                      ], 
+                      "name": "language"
+                    }, 
+                    {
+                      "doc": "The Country field of Locale.", 
+                      "type": [
+                        "null", 
+                        "string"
+                      ], 
+                      "name": "country"
+                    }, 
+                    {
+                      "doc": "The Variant field of Locale.", 
+                      "type": [
+                        "null", 
+                        "string"
+                      ], 
+                      "name": "variant"
+                    }
+                  ]
+                }
+              ], 
+              "name": "locale"
+            }, 
+            {
+              "default": null, 
+              "doc": "if the endorsement originated from a suggestion then this is the model used to generate it, if it is known", 
+              "type": [
+                "null", 
+                "string"
+              ], 
+              "name": "model"
+            }
+          ]
+        }, 
+        "type": "array"
+      }, 
+      "name": "endorsements"
+    }
+  ]
+}

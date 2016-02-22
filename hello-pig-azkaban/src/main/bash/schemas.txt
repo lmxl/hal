@@ -1,0 +1,3 @@
+EndorsementsEndorseEvent /data/tracking/EndorsementsEndorseEvent/daily/2015/03/08
+MemberAccount /data/databases/MEMBER2/MEMBER_ACCOUNT#LATEST
+ProfileData /data/databases/Identity/Profile/#LATEST

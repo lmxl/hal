@@ -1,0 +1,178 @@
+apply plugin: 'li-hadoop'
+
+// First, declare your definition sets
+definitionSet defs: [
+  proxyEmail: "ymo@linkedin.com",
+  proxyPath: "/user",
+  proxyUser: "ymo"
+]
+
+// Override any properties in the above definition set in your own profile script. We suggest
+// adding this path to your .gitignore, but your team might choose to keep them in source control.
+applyProfile from: "${project.projectDir}/src/main/profiles/${System.properties['user.name']}.gradle"
+
+// In the DSL, you can write arbitrary Groovy anywhere you need to so
+def profileData = '/data/databases/Identity/Profile/#LATEST'
+def memberAccount = '/data/databases/MEMBER2/MEMBER_ACCOUNT/#LATEST'
+def endorseEvents = '/data/tracking/EndorsementsEndorseEvent'
+def outputPrefix  = "${lookupDef('proxyPath')}/${lookupDef('proxyUser')}"
+
+hadoop {
+  buildPath "azkaban"
+
+
+  propertyFile('common') {
+    set properties: [
+      "notify.emails": lookupDef('proxyEmail'),
+      "user.to.proxy": lookupDef('proxyUser')
+    ]
+  }
+
+  def defaultGenericOptions = '-D mapred.job.map.memory.mb=10000 -D stream.memory.limit=10000 -D mapred.job.queue.name=public -D mapred.task.timeout=18000000'
+  workflow('interval') {
+    hadoopJavaJob('pythonGo') {
+      uses 'com.linkedin.metronome.mapred.Streamer'
+      cachesArchive files: [
+              'epd' : '/user/ymo/epd.tar.gz'
+      ]
+      set properties: [
+              'input.paths' : '/user/ymo/jobs',
+              'output.path' : '/user/ymo/hal/interval',
+              'mapper': 'epd/epd/bin/python interval/expacr.py',
+              'files': 'src/main/python/interval',
+              'force.output.overwrite': 'true',
+              'extra.generic.options': defaultGenericOptions
+      ]
+    }
+    targets 'pythonGo'
+  }
+
+  workflow('richmond') {
+    hadoopJavaJob('pythonGo') {
+      uses 'com.linkedin.metronome.mapred.Streamer'
+      cachesArchive files: [
+              'epd' : '/user/ymo/epd.tar.gz',
+              'richmond_data' : '/user/ymo/richmond.tar.gz'
+      ]
+      set properties: [
+              'input.paths' : '/user/ymo/jobs',
+              'output.path' : '/user/ymo/hal/richmond',
+              'mapper': 'epd/epd/bin/python richmond/richmond_adv.py',
+              'files': 'src/main/python/richmond',
+              'force.output.overwrite': 'true',
+              'extra.generic.options': defaultGenericOptions
+      ]
+    }
+    targets 'pythonGo'
+  }
+
+  workflow('richmond-fixed') {
+    hadoopJavaJob('pythonGo') {
+      uses 'com.linkedin.metronome.mapred.Streamer'
+      cachesArchive files: [
+              'epd' : '/user/ymo/epd.tar.gz',
+              'richmond_data' : '/user/ymo/richmond.tar.gz'
+      ]
+      set properties: [
+              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
+              'output.path' : '/user/ymo/hal/richmond-fixed',
+              'mapper': 'epd/epd/bin/python richmond/richmond_fixed.py',
+              'files': 'src/main/python/richmond',
+              'force.output.overwrite': 'true',
+              'extra.generic.options': defaultGenericOptions
+      ]
+    }
+    targets 'pythonGo'
+  }
+
+  workflow('rcv1') {
+    hadoopJavaJob('pythonGo') {
+      uses 'com.linkedin.metronome.mapred.Streamer'
+      cachesArchive files: [
+        'epd' : '/user/ymo/epd.tar.gz',
+        'rcv1' : '/user/ymo/rcv1.tar.gz'
+      ]
+      set properties: [
+        'input.paths' : '/user/ymo/jobs',
+        'output.path' : '/user/ymo/hal/rcv1',
+        'mapper': 'epd/epd/bin/python rcv1ac.py',
+        'files': 'src/main/python/rcv1/rcv1ac.py',
+        'force.output.overwrite': 'true',
+        'extra.generic.options': defaultGenericOptions
+      ]
+    }
+    targets 'pythonGo'
+  }
+
+  workflow('countByCountryFlow') {
+    pigLiJob('countByCountry') {
+      uses 'src/main/pig/count_by_country.pig'
+      reads files: [
+        'profile_data': profileData
+      ]
+      writes files: [
+        'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/count_by_country"
+      ]
+      set properties: [
+        'pig.additional.jars': "hello-pig-udf-${project.version}.jar"
+      ]
+    }
+
+    targets 'countByCountry'
+  }
+
+  workflow ('countByCountryPythonFlow') {
+    pigLiJob('countByCountryPython') {
+      uses 'src/main/pig/count_by_country_python.pig'
+      reads files: [
+        'profile_data': profileData
+      ]
+      writes files: [
+        'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/count_by_country_python"
+      ]
+    }
+
+    targets 'countByCountryPython'
+  }
+
+  workflow('memberEventCountFlow') {
+    pigLiJob('memberEventCount') {
+      uses 'src/main/pig/member_event_count.pig'
+      reads files: [
+        'event_path': endorseEvents
+      ]
+      writes files: [
+        'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/member_event_count"
+      ]
+      set parameters: [
+        'num_days': '2'
+      ]
+    }
+
+    targets 'memberEventCount'
+  }
+
+  workflow('postalCodeFlow') {
+    pigLiJob('postalCode') {
+      uses 'src/main/pig/postal_code.pig'
+      reads files: [
+        'member_account': memberAccount
+      ]
+      writes files: [
+        'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/postal_code"
+      ]
+    }
+
+    targets 'postalCode'
+  }
+
+  workflow('singlejob') {
+    pigLiJob('test1') {
+      uses 'src/main/pig/python-test.pig'
+      writes files: [
+        'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/result/"
+      ]
+    }
+    targets 'test1'
+  }
+}
