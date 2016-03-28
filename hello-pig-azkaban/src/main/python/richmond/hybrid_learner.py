@@ -79,7 +79,7 @@ def hybrid_learner(exp, step_size=50.0, initial_size=200, active=False, fine_rat
         step_size_coarse += 1
 
     feats_train_coarse, feats_train_fine, feats_val, feats_pool, label_train_coarse,\
-        label_train_fine, label_val, label_pool = exp
+        label_train_fine, label_val, label_pool, feats_sample = exp
     if len(feats_train_fine) + len(feats_train_coarse) < initial_size:
         feats_train_fine, feats_pool, label_train_fine, label_pool = \
             train_test_split(feats_pool, label_pool, train_size=initial_size, random_state=42)
@@ -88,24 +88,29 @@ def hybrid_learner(exp, step_size=50.0, initial_size=200, active=False, fine_rat
                 train_test_split(feats_train_fine, label_train_fine,
                                  train_size=int(fine_ratio*initial_size), random_state=42)
     if active:
-        tag = 'hybrid_active_%d_%d' % (len(label_train_fine), len(label_train_coarse))
+        model_group_id = 'hybrid_active_%d_%d' % (len(label_train_fine), len(label_train_coarse))
     else:
-        tag = 'hybrid_passive_%d_%d' % (len(label_train_fine), len(label_train_coarse))
-    print >> sys.stderr, '= Experiment on [%s]' % tag, ' <-', \
+        model_group_id = 'hybrid_passive_%d_%d' % (len(label_train_fine), len(label_train_coarse))
+    print >> sys.stderr, '= Experiment on [%s]' % model_group_id, ' <-', \
         len(feats_train_fine), len(feats_train_coarse), len(feats_pool), len(feats_val)
 
-    fine_tags = trainmulticrf(feats_train_fine, feats_train_coarse, label_train_fine, label_train_coarse, tag)
-    #print >> sys.stderr, 'Fine tags', fine_tags
-    score_val = predictmulticrf(feats_val, fine_tags, tag)
+    fine_tags = trainmulticrf(feats_train_fine, feats_train_coarse, label_train_fine, label_train_coarse, model_group_id)
+
+    # print >> sys.stderr, 'Fine tags', fine_tags
+
+    score_val = predictmulticrf(feats_val, fine_tags, model_group_id)
+
+    score_sample_pre = predictmulticrf(feats_sample, fine_tags, model_group_id)
+
     pr, roc = calculate_auc(masklabel(label_val), score_val)
     obj = {'coarse': False, 'active': active, 'pr': pr, 'roc': roc,
            'size': len(feats_train_fine) + len(feats_train_coarse), 'ratio': fine_ratio,
            'fine_size': len(feats_train_fine), 'coarse_size': len(feats_train_coarse)}
     # trace(obj)
-    #  open('report/%s_report.txt' % tag,'w').write(tag + '\r\n' +
+    #  open('report/%s_report.txt' % model_group_id,'w').write(model_group_id + '\r\n' +
     #       bio_classification_report(masklabel(label_val), score_val))
     if active:
-        unk_coarse, final_unk_fine = fine_uncertainty(feats_pool, fine_tags, tag)
+        unk_coarse, final_unk_fine = fine_uncertainty(feats_pool, fine_tags, model_group_id)
         unk_coarse = array(unk_coarse)
         final_unk_fine = array(final_unk_fine)
         indices_next_fine = final_unk_fine.argsort()[::-1][:step_size_fine]

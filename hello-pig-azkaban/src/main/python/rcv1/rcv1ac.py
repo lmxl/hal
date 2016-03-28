@@ -86,9 +86,9 @@ def lpp(dataset, explore, fine, tpr = False):
     if fine == 0:
         key = target
         cat = set(z_y[key])
-        train_y = np.array( [1 if x in cat else 0 for x in train_z])
+        train_y = np.array([1 if x in cat else 0 for x in train_z])
         model = LogisticRegression(solver='liblinear', penalty='l2', C=10)           
-        model.fit(train_x,train_y)
+        model.fit(train_x, train_y)
         prob_y = model.predict_proba(test_x)[:,1]
         pool_conf = [ abs(v-0.5) for v in model.predict_proba(pool_x)[:,1] ]
     else:

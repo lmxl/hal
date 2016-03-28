@@ -12,6 +12,8 @@ feats, labels, fines = pickle.load(open('richmond_data/ex.pickle'))
 from sklearn.cross_validation import train_test_split
 feats_pool, feats_val, label_pool, label_val = \
     train_test_split(feats, fines, test_size=0.8)
+feats_sample, feats_pool, label_sample, label_pool = \
+    train_test_split(feats, fines, test_size=0.75)
 from hybrid_learner import *
 print >> sys.stderr, 'Loading done'
 l = 0.2
@@ -20,7 +22,7 @@ ratio_p = 0.5
 cost_r = 5
 budget_t = 25
 target_prev = 0
-exp = [[], [], feats_val, feats_pool, [], [], label_val, label_pool]
+exp = [[], [], feats_val, feats_pool, [], [], label_val, label_pool, feats_sample]
 deltas = []
 for i in range(100):
     if random.random() > ratio_p:

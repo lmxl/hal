@@ -30,21 +30,35 @@ hadoop {
 
   def defaultGenericOptions = '-D mapred.job.map.memory.mb=10000 -D stream.memory.limit=10000 -D mapred.job.queue.name=public -D mapred.task.timeout=18000000'
   workflow('interval') {
-    hadoopJavaJob('pythonGo') {
+    hadoopJavaJob('manyTypes') {
       uses 'com.linkedin.metronome.mapred.Streamer'
       cachesArchive files: [
               'epd' : '/user/ymo/epd.tar.gz'
       ]
       set properties: [
-              'input.paths' : '/user/ymo/jobs',
-              'output.path' : '/user/ymo/hal/interval',
-              'mapper': 'epd/epd/bin/python interval/expacr.py',
-              'files': 'src/main/python/interval',
+              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
+              'output.path' : '/user/ymo/hal/interval/many_types',
+              'mapper': 'epd/epd/bin/python commonHAL/IntervalModel.py -t many_types',
+              'files': 'src/main/python/commonHAL',
               'force.output.overwrite': 'true',
               'extra.generic.options': defaultGenericOptions
       ]
     }
-    targets 'pythonGo'
+    hadoopJavaJob('dynamicRatio') {
+      uses 'com.linkedin.metronome.mapred.Streamer'
+      cachesArchive files: [
+              'epd' : '/user/ymo/epd.tar.gz'
+      ]
+      set properties: [
+              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
+              'output.path' : '/user/ymo/hal/interval/dynamic_ratio',
+              'mapper': 'epd/epd/bin/python commonHAL/IntervalModel.py -t dynamic_ratio',
+              'files': 'src/main/python/commonHAL',
+              'force.output.overwrite': 'true',
+              'extra.generic.options': defaultGenericOptions
+      ]
+    }
+    targets 'manyTypes', 'dynamicRatio'
   }
 
   workflow('richmond') {
@@ -93,7 +107,7 @@ hadoop {
         'rcv1' : '/user/ymo/rcv1.tar.gz'
       ]
       set properties: [
-        'input.paths' : '/user/ymo/jobs',
+        'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
         'output.path' : '/user/ymo/hal/rcv1',
         'mapper': 'epd/epd/bin/python rcv1ac.py',
         'files': 'src/main/python/rcv1/rcv1ac.py',
