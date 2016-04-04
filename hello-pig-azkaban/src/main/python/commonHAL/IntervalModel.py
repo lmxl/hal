@@ -46,17 +46,20 @@ class IntervalModel:
                                   self.training_examples_fine[2] + self.training_examples_coarse[2])
 
     def acquire_example_ids(self, ids, example_type):
-        ids = set(ids)
-        pool_examples = zip(*self.pool_examples)
-        selected_pool_examples = [pool_examples[i] for i in range(len(pool_examples)) if i in ids]
-        rest_pool_examples = [pool_examples[i] for i in range(len(pool_examples)) if i not in ids]
-        self.pool_examples = zip(*rest_pool_examples)
-        if example_type == 'fine':
-            examples = zip(*self.training_examples_fine) + selected_pool_examples
-            self.training_examples_fine = [list(i) for i in zip(*examples)]
-        else:
-            examples = zip(*self.training_examples_coarse) + selected_pool_examples
-            self.training_examples_coarse = [list(i) for i in zip(*examples)]
+        if len(ids) > 0:
+            ids = set(ids)
+            pool_examples = zip(*self.pool_examples)
+            selected_pool_examples = [pool_examples[i] for i in range(len(pool_examples)) if i in ids]
+            rest_pool_examples = [pool_examples[i] for i in range(len(pool_examples)) if i not in ids]
+            self.pool_examples = zip(*rest_pool_examples)
+            if example_type == 'fine':
+                examples = zip(*self.training_examples_fine) + selected_pool_examples
+                self.training_examples_fine = [list(i) for i in zip(*examples)]
+            else:
+                examples = zip(*self.training_examples_coarse) + selected_pool_examples
+                self.training_examples_coarse = [list(i) for i in zip(*examples)]
+        print >> sys.stderr, 'Fine size [ %d ] Coarse size [ %d ]' % \
+                             (len(self.training_examples_fine[0]), len(self.training_examples_coarse[0]))
         return
 
     @staticmethod
@@ -131,7 +134,7 @@ class IntervalModel:
         assert max(coarse_scores) <= 1.0
         assert min(coarse_scores) >= 0.0
         print 'Metric = %f' % controller.current_metric()
-        print 'ALL Unc AVG = %f' % np.mean(controller.current_uncertainty())
+        print 'ALL Unc AVG = %f' % np.mean(controller.current_uncertainty(data_group='test'))
 
         #Begin active learning test
         print 'Fine Size [ %d ] Coarse Size [ %d ]' % (len(model.training_examples_fine[0]),
@@ -139,7 +142,7 @@ class IntervalModel:
         #Test fine
         pcs_acquire = 10
         print 'ACQUIRE [ %d ] fine examples' % pcs_acquire
-        pcs, ucties = controller.recommend_acquisition_ids(pcs_acquire, method='fine')
+        pcs, ucties = controller.recommend_acquisition_ids(pcs_acquire, algo='active', method='fine')
         print 'Recommendation Uncertainty AVG = %f' % np.mean(ucties)
         assert np.mean(ucties) > 0
         model.acquire_example_ids(pcs, 'fine')
@@ -149,31 +152,35 @@ class IntervalModel:
         #Test Coarse
         pcs_acquire = 10
         print 'ACQUIRE [ %d ] coarse examples' % pcs_acquire
-        pcs, ucties = controller.recommend_acquisition_ids(pcs_acquire, method='coarse')
+        pcs, ucties = controller.recommend_acquisition_ids(pcs_acquire, algo='active', method='coarse')
         print 'Recommendation Uncertainty AVG = %f' % np.mean(ucties)
         assert np.mean(ucties) > 0
         model.acquire_example_ids(pcs, 'coarse')
         assert len(model.training_examples_coarse[0]) == train_coarse_size + pcs_acquire
         print 'Fine Size [ %d ] Coarse Size [ %d ]' % (len(model.training_examples_fine[0]),
                                                        len(model.training_examples_coarse[0]))
+        many_types(num_iteration=2)
+        dynamic_ratio(num_iteration=2)
 
         print 'PASSED [ %s ]' % IntervalModel
         return controller
+
 
 def set_up(pond_enabled=False):
     pool_size = 2000
     test_size = 1000
     train_fine_size = 100
-    train_coarse_size = 100
+    train_coarse_size = 0
     model = IntervalModel(train_fine_size, train_coarse_size, pool_size, test_size)
     model.fit()
-    controller = UncertaintySamplingController.UncertaintySamplingController(model, pond_enabled=pond_enabled)
+    controller = UncertaintySamplingController.UncertaintySamplingController(model,
+                                                                             pond_enabled=pond_enabled,
+                                                                             reward_factor=100.0)
     return controller
 
-def many_types():
-    pcs_acquire = 1
-    num_iteration = 150
-    repeats = 10
+
+def many_types(num_iteration=300, repeats=5):
+    pcs_acquire = 10
     result = []
     for j in range(repeats):
         for method in ['coarse', 'fine']:
@@ -190,14 +197,11 @@ def many_types():
                 result.append(result_buffer)
         print json.dumps(result)
 
-def dynamic_ratio():
-    pcs_acquire = 1
-    num_iteration = 150
-    budget_step = 1
-    repeats = 5
+
+def dynamic_ratio(num_iteration=100, repeats=1, budget_step=10):
     result = []
     for j in range(repeats):
-        for cost in range(1,6):
+        for cost in range(1,10):
             for z in range(1):
                 controller = set_up(pond_enabled=True)
                 result_buffer = []
@@ -207,6 +211,7 @@ def dynamic_ratio():
                     result_buffer.append(metric)
                     controller.learn_by_cost(budget_step, algo='bandit_uncertainty_sampling', cost_ratio=cost)
                 result.append(result_buffer)
+            # continue
             for ratio in range(11):
                 ratio = 0.1 * ratio
                 controller = set_up()
@@ -223,7 +228,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-t')
     args = parser.parse_args()
-    if args.t == 'test':
+    if args.t == 'unittest':
         IntervalModel.unittest()
     if args.t == 'many_types':
         many_types()

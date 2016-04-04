@@ -6,8 +6,9 @@ import math
 import sys
 
 class UncertaintySamplingController:
-    def __init__(self, baseModel, pond_enabled=False):
+    def __init__(self, baseModel, pond_enabled=False, reward_factor = 1.0):
         self.model = baseModel
+        self.reward_factor = reward_factor
         if pond_enabled:
             self.pond_enabled = pond_enabled
             self.pond_uncertainty = self.current_uncertainty(data_group='pond')
@@ -17,7 +18,7 @@ class UncertaintySamplingController:
     def compute_reward(self):
         assert self.pond_enabled, 'pond not enabled'
         new_ucties = self.current_uncertainty(data_group='pond')
-        reward = np.mean([abs(i-j) for (i, j) in zip(self.pond_uncertainty, new_ucties)])
+        reward = self.reward_factor * np.mean([abs(i-j) for (i, j) in zip(self.pond_uncertainty, new_ucties)])
         self.pond_uncertainty = new_ucties
         print >> sys.stderr, 'rewards = %.4f' % reward
         return reward
@@ -77,13 +78,14 @@ class UncertaintySamplingController:
         self.model.fit()
 
     def learn_by_cost(self, budget_size, algo, cost_ratio, fixed_fine_budget_ratio=None):
+        budget_size = float(budget_size)
         if algo == 'fixed_fine_ratio':
-            budget_size_fine = (budget_size * fixed_fine_budget_ratio)/cost_ratio
+            budget_size_fine = budget_size * fixed_fine_budget_ratio
             budget_size_coarse = budget_size - budget_size_fine
-            step_size_fine = int(budget_size_fine)
+            step_size_fine = int(budget_size_fine / cost_ratio)
             step_size_coarse = int(budget_size_coarse)
             # handle the fraction that do not round up
-            overhead = budget_size_fine - step_size_fine
+            overhead = budget_size_fine/cost_ratio - step_size_fine
             if random.random() < overhead:
                 step_size_fine += 1
             overhead = budget_size_coarse - step_size_coarse
@@ -96,29 +98,29 @@ class UncertaintySamplingController:
             self.model.acquire_example_ids(ids, example_type='coarse')
             self.model.fit()
         elif algo == 'bandit_uncertainty_sampling':
-            budget_size_fine = budget_size/cost_ratio
-            budget_size_coarse = budget_size
-            step_size_fine = int(budget_size_fine)
-            step_size_coarse = int(budget_size_coarse)
+            step_size_fine = int(budget_size / cost_ratio)
+            step_size_coarse = int(budget_size)
             # handle the fraction that do not round up
-            overhead = budget_size_fine - step_size_fine
+            overhead = 1.0 * budget_size/cost_ratio - step_size_fine
             if random.random() < overhead:
                 step_size_fine += 1
-            overhead = budget_size_coarse - step_size_coarse
+            overhead = budget_size - step_size_coarse
             if random.random() < overhead:
                 step_size_coarse += 1
 
             if len(self.coarse_rewards) == 0:
-                self.go_allin_type(step_size_coarse, method='coarse', algo='active')
+                self.go_allin_type(max(1, step_size_coarse), method='coarse', algo='active')
                 self.coarse_rewards.append(self.compute_reward())
             elif len(self.fine_rewards) == 0:
-                self.go_allin_type(step_size_fine, method='fine', algo='active')
+                self.go_allin_type(max(1, step_size_fine), method='fine', algo='active')
                 self.fine_rewards.append(self.compute_reward())
             else:
                 n_play_fine = len(self.fine_rewards)
                 n_play_coarse = len(self.coarse_rewards)
                 expect_fine = np.mean(self.fine_rewards) + math.sqrt(2.0* math.log(n_play_coarse+ n_play_fine)/ n_play_fine)
                 expect_coarse = np.mean(self.coarse_rewards) + math.sqrt(2.0* math.log(n_play_coarse+ n_play_fine)/ n_play_coarse)
+                print >> sys.stderr, 'diff [ %.4f = %.4f - %.4f ] nplay fine [ %d ] coarse [ %d ]' % \
+                                     (expect_fine - expect_coarse, expect_fine, expect_coarse, n_play_fine, n_play_coarse)
                 if expect_fine > expect_coarse:
                     self.go_allin_type(step_size_fine, method='fine', algo='active')
                     self.fine_rewards.append(self.compute_reward())
@@ -158,7 +160,7 @@ class UncertaintySamplingController:
             # dummy scores
             fine_scores = coarse_scores
         # in case of fine only prediction
-        if not coarse_scores:
+        if len(coarse_scores) == 0:
             coarse_scores = fine_scores
         hybrid_scores = [alpha*scores_tuple[0] + beta*scores_tuple[1]
                          for scores_tuple in zip(coarse_scores, fine_scores)]
