@@ -11,200 +11,182 @@ definitionSet defs: [
 // adding this path to your .gitignore, but your team might choose to keep them in source control.
 applyProfile from: "${project.projectDir}/src/main/profiles/${System.properties['user.name']}.gradle"
 
-// In the DSL, you can write arbitrary Groovy anywhere you need to so
-def profileData = '/data/databases/Identity/Profile/#LATEST'
-def memberAccount = '/data/databases/MEMBER2/MEMBER_ACCOUNT/#LATEST'
-def endorseEvents = '/data/tracking/EndorsementsEndorseEvent'
 def outputPrefix  = "${lookupDef('proxyPath')}/${lookupDef('proxyUser')}"
 
 hadoop {
-  buildPath "azkaban"
+    buildPath "azkaban"
 
 
-  propertyFile('common') {
-    set properties: [
-            "notify.emails": lookupDef('proxyEmail'),
-            "user.to.proxy": lookupDef('proxyUser')
-    ]
-  }
-
-  def defaultGenericOptions = '-D mapred.job.map.memory.mb=10000 -D stream.memory.limit=10000 -D mapred.job.queue.name=public -D mapred.task.timeout=180000000'
-  def smallMemoryOptions = '-D mapred.job.map.memory.mb=2000 -D stream.memory.limit=2000 -D mapred.job.queue.name=public -D mapred.task.timeout=18000000'
-  workflow('interval') {
-    hadoopJavaJob('manyTypes') {
-      uses 'com.linkedin.metronome.mapred.Streamer'
-      cachesArchive files: [
-              'epd' : '/user/ymo/epd.tar.gz'
-      ]
-      set properties: [
-              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
-              'output.path' : '/user/ymo/hal/interval/many_types',
-              'mapper': 'epd/epd/bin/python commonHAL/IntervalModel.py -t many_types',
-              'files': 'src/main/python/commonHAL',
-              'force.output.overwrite': 'true',
-              'extra.generic.options': smallMemoryOptions
-      ]
-    }
-    hadoopJavaJob('dynamicRatio') {
-      uses 'com.linkedin.metronome.mapred.Streamer'
-      cachesArchive files: [
-              'epd' : '/user/ymo/epd.tar.gz'
-      ]
-      set properties: [
-              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
-              'output.path' : '/user/ymo/hal/interval/dynamic_ratio',
-              'mapper': 'epd/epd/bin/python commonHAL/IntervalModel.py -t dynamic_ratio',
-              'files': 'src/main/python/commonHAL',
-              'force.output.overwrite': 'true',
-              'extra.generic.options': smallMemoryOptions
-      ]
-    }
-    targets 'manyTypes', 'dynamicRatio'
-  }
-
-  workflow('richmond') {
-    hadoopJavaJob('pythonGo') {
-      uses 'com.linkedin.metronome.mapred.Streamer'
-      cachesArchive files: [
-              'epd' : '/user/ymo/epd.tar.gz',
-              'richmond_data' : '/user/ymo/richmond.tar.gz'
-      ]
-      set properties: [
-              'input.paths' : '/user/ymo/jobs',
-              'output.path' : '/user/ymo/hal/richmond',
-              'mapper': 'epd/epd/bin/python richmond/richmond_adv.py',
-              'files': 'src/main/python/richmond',
-              'force.output.overwrite': 'true',
-              'extra.generic.options': defaultGenericOptions
-      ]
-    }
-    targets 'pythonGo'
-  }
-
-  workflow('richmond-fixed') {
-    hadoopJavaJob('pythonGo') {
-      uses 'com.linkedin.metronome.mapred.Streamer'
-      cachesArchive files: [
-              'epd' : '/user/ymo/epd.tar.gz',
-              'richmond_data' : '/user/ymo/richmond.tar.gz'
-      ]
-      set properties: [
-              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
-              'output.path' : '/user/ymo/hal/richmond-fixed',
-              'mapper': 'epd/epd/bin/python richmond/richmond_fixed.py',
-              'files': 'src/main/python/richmond',
-              'force.output.overwrite': 'true',
-              'extra.generic.options': defaultGenericOptions
-      ]
-    }
-    targets 'pythonGo'
-  }
-
-  workflow('rcv1') {
-    hadoopJavaJob('manyTypes') {
-      uses 'com.linkedin.metronome.mapred.Streamer'
-      cachesArchive files: [
-              'epd' : '/user/ymo/epd.tar.gz',
-              'rcv1' : '/user/ymo/rcv1.tar.gz'
-      ]
-      set properties: [
-              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
-              'output.path' : '/user/ymo/hal/rcv1/many_types',
-              'mapper': 'epd/epd/bin/python commonHAL/RCV1Model.py -t many_types',
-              'files': 'src/main/python/commonHAL',
-              'force.output.overwrite': 'true',
-              'extra.generic.options': defaultGenericOptions
-      ]
+    propertyFile('common') {
+        set properties: [
+                "notify.emails": lookupDef('proxyEmail'),
+                "user.to.proxy": lookupDef('proxyUser')
+        ]
     }
 
-    hadoopJavaJob('dynamicRatio') {
-      uses 'com.linkedin.metronome.mapred.Streamer'
-      cachesArchive files: [
-              'epd' : '/user/ymo/epd.tar.gz',
-              'rcv1' : '/user/ymo/rcv1.tar.gz'
-      ]
-      set properties: [
-              'input.paths' : '/user/ymo/hal/jobs/richmond-fixed',
-              'output.path' : '/user/ymo/hal/rcv1/dynamic_ratio',
-              'mapper': 'epd/epd/bin/python commonHAL/RCV1Model.py -t dynamic_ratio',
-              'files': 'src/main/python/commonHAL',
-              'force.output.overwrite': 'true',
-              'extra.generic.options': defaultGenericOptions
-      ]
+    def largeMemoryOptions = '-D mapred.job.map.memory.mb=10000 -D stream.memory.limit=10000 -D mapred.job.queue.name=public -D mapred.task.timeout=180000000'
+    def smallMemoryOptions = '-D mapred.job.map.memory.mb=2000 -D stream.memory.limit=2000 -D mapred.job.queue.name=public -D mapred.task.timeout=18000000'
+    def mediumMemoryOptions = '-D mapred.job.map.memory.mb=6000 -D stream.memory.limit=6000 -D mapred.job.queue.name=public -D mapred.task.timeout=18000000'
+    def defaultGenericOptions = smallMemoryOptions
+    workflow('halgeneral') {
+        def halids = ['richmond', 'RCV1', 'interval']
+        def exps = ['manyTypes', 'dynamicRatio']
+        noOpJob('experiments') {
+            for (exp in exps) {
+                def exp_name = 'hal-' + exp
+                depends exp_name
+                noOpJob(exp_name) {
+                    for (halid in halids) {
+                        def hal_exp_name = halid + '-' + exp
+                        depends hal_exp_name
+                        hadoopJavaJob(hal_exp_name) {
+                            uses 'com.linkedin.metronome.mapred.Streamer'
+                            def props = [
+                                    'input.paths'           : '/user/ymo/hal/tasks/' + exp + '/' + halid,
+                                    'output.path'           : '/user/ymo/hal/results/' + exp + '/' + halid,
+                                    'mapper'                : 'epd/epd/bin/python commonHAL/taskView.py -t tasks',
+                                    'reducer'               : '/bin/cat',
+                                    'files'                 : 'src/main/python/commonHAL',
+                                    'force.output.overwrite': 'true',
+                            ]
+                            def caches = ['epd': '/user/ymo/epd.tar.gz']
+                            switch (halid) {
+                                case 'richmond':
+                                    caches.put('richmond_data', '/user/ymo/richmond.tar.gz')
+                                    props.put('extra.generic.options', largeMemoryOptions)
+                                    break
+                                case 'RCV1':
+                                    caches.put('rcv1', '/user/ymo/rcv1.tar.gz')
+                                    props.put('extra.generic.options', mediumMemoryOptions)
+                                    break
+                                default:
+                                    props.put('extra.generic.options', smallMemoryOptions)
+                                    break
+                            }
+                            cachesArchive files: caches
+                            set properties: props
+                        }
+                    }
+                }
+            }
+        }
+        targets 'experiments'
     }
 
-    targets 'manyTypes', 'dynamicRatio'
-  }
-
-  workflow('countByCountryFlow') {
-    pigLiJob('countByCountry') {
-      uses 'src/main/pig/count_by_country.pig'
-      reads files: [
-              'profile_data': profileData
-      ]
-      writes files: [
-              'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/count_by_country"
-      ]
-      set properties: [
-              'pig.additional.jars': "hello-pig-udf-${project.version}.jar"
-      ]
+    workflow('interval') {
+        hadoopJavaJob('manyTypes') {
+            uses 'com.linkedin.metronome.mapred.Streamer'
+            cachesArchive files: [
+                    'epd': '/user/ymo/epd.tar.gz'
+            ]
+            set properties: [
+                    'input.paths'           : '/user/ymo/hal/jobs/richmond-fixed',
+                    'output.path'           : '/user/ymo/hal/interval/many_types',
+                    'mapper'                : 'epd/epd/bin/python commonHAL/IntervalModel.py -t many_types',
+                    'files'                 : 'src/main/python/commonHAL',
+                    'force.output.overwrite': 'true',
+                    'extra.generic.options' : smallMemoryOptions
+            ]
+        }
+        hadoopJavaJob('dynamicRatio') {
+            uses 'com.linkedin.metronome.mapred.Streamer'
+            cachesArchive files: [
+                    'epd': '/user/ymo/epd.tar.gz'
+            ]
+            set properties: [
+                    'input.paths'           : '/user/ymo/hal/jobs/richmond-fixed',
+                    'output.path'           : '/user/ymo/hal/interval/dynamic_ratio',
+                    'mapper'                : 'epd/epd/bin/python commonHAL/IntervalModel.py -t dynamic_ratio',
+                    'files'                 : 'src/main/python/commonHAL',
+                    'force.output.overwrite': 'true',
+                    'extra.generic.options' : smallMemoryOptions
+            ]
+        }
+        targets 'manyTypes', 'dynamicRatio'
     }
 
-    targets 'countByCountry'
-  }
-
-  workflow ('countByCountryPythonFlow') {
-    pigLiJob('countByCountryPython') {
-      uses 'src/main/pig/count_by_country_python.pig'
-      reads files: [
-              'profile_data': profileData
-      ]
-      writes files: [
-              'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/count_by_country_python"
-      ]
+    workflow('richmond') {
+        hadoopJavaJob('pythonGo') {
+            uses 'com.linkedin.metronome.mapred.Streamer'
+            cachesArchive files: [
+                    'epd'          : '/user/ymo/epd.tar.gz',
+                    'richmond_data': '/user/ymo/richmond.tar.gz'
+            ]
+            set properties: [
+                    'input.paths'           : '/user/ymo/jobs',
+                    'output.path'           : '/user/ymo/hal/richmond',
+                    'mapper'                : 'epd/epd/bin/python richmond/richmond_adv.py',
+                    'files'                 : 'src/main/python/richmond',
+                    'force.output.overwrite': 'true',
+                    'extra.generic.options' : defaultGenericOptions
+            ]
+        }
+        targets 'pythonGo'
     }
 
-    targets 'countByCountryPython'
-  }
-
-  workflow('memberEventCountFlow') {
-    pigLiJob('memberEventCount') {
-      uses 'src/main/pig/member_event_count.pig'
-      reads files: [
-              'event_path': endorseEvents
-      ]
-      writes files: [
-              'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/member_event_count"
-      ]
-      set parameters: [
-              'num_days': '2'
-      ]
+    workflow('richmond-fixed') {
+        hadoopJavaJob('pythonGo') {
+            uses 'com.linkedin.metronome.mapred.Streamer'
+            cachesArchive files: [
+                    'epd'          : '/user/ymo/epd.tar.gz',
+                    'richmond_data': '/user/ymo/richmond.tar.gz'
+            ]
+            set properties: [
+                    'input.paths'           : '/user/ymo/hal/jobs/richmond-fixed',
+                    'output.path'           : '/user/ymo/hal/richmond-fixed',
+                    'mapper'                : 'epd/epd/bin/python richmond/richmond_fixed.py',
+                    'files'                 : 'src/main/python/richmond',
+                    'force.output.overwrite': 'true',
+                    'extra.generic.options' : defaultGenericOptions
+            ]
+        }
+        targets 'pythonGo'
     }
 
-    targets 'memberEventCount'
-  }
+    workflow('rcv1') {
+        hadoopJavaJob('manyTypes') {
+            uses 'com.linkedin.metronome.mapred.Streamer'
+            cachesArchive files: [
+                    'epd' : '/user/ymo/epd.tar.gz',
+                    'rcv1': '/user/ymo/rcv1.tar.gz'
+            ]
+            set properties: [
+                    'input.paths'           : '/user/ymo/hal/jobs/richmond-fixed',
+                    'output.path'           : '/user/ymo/hal/rcv1/many_types',
+                    'mapper'                : 'epd/epd/bin/python commonHAL/RCV1Model.py -t many_types',
+                    'files'                 : 'src/main/python/commonHAL',
+                    'force.output.overwrite': 'true',
+                    'extra.generic.options' : defaultGenericOptions
+            ]
+        }
 
-  workflow('postalCodeFlow') {
-    pigLiJob('postalCode') {
-      uses 'src/main/pig/postal_code.pig'
-      reads files: [
-              'member_account': memberAccount
-      ]
-      writes files: [
-              'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/postal_code"
-      ]
+        hadoopJavaJob('dynamicRatio') {
+            uses 'com.linkedin.metronome.mapred.Streamer'
+            cachesArchive files: [
+                    'epd' : '/user/ymo/epd.tar.gz',
+                    'rcv1': '/user/ymo/rcv1.tar.gz'
+            ]
+            set properties: [
+                    'input.paths'           : '/user/ymo/hal/jobs/richmond-fixed',
+                    'output.path'           : '/user/ymo/hal/rcv1/dynamic_ratio',
+                    'mapper'                : 'epd/epd/bin/python commonHAL/RCV1Model.py -t dynamic_ratio',
+                    'files'                 : 'src/main/python/commonHAL',
+                    'force.output.overwrite': 'true',
+                    'extra.generic.options' : defaultGenericOptions
+            ]
+        }
+
+        targets 'manyTypes', 'dynamicRatio'
     }
 
-    targets 'postalCode'
-  }
 
-  workflow('singlejob') {
-    pigLiJob('test1') {
-      uses 'src/main/pig/python-test.pig'
-      writes files: [
-              'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/result/"
-      ]
+    workflow('singlejob') {
+        pigLiJob('test1') {
+            uses 'src/main/pig/python-test.pig'
+            writes files: [
+                    'output_path': "${outputPrefix}/hadoop-starter-kit/hello-pig-azkaban/result/"
+            ]
+        }
+        targets 'test1'
     }
-    targets 'test1'
-  }
 }

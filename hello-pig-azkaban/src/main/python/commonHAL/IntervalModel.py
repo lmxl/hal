@@ -167,7 +167,7 @@ class IntervalModel:
 
 
 def set_up(pond_enabled=False):
-    pool_size = 2000
+    pool_size = 10000
     test_size = 1000
     train_fine_size = 100
     train_coarse_size = 0
@@ -180,7 +180,7 @@ def set_up(pond_enabled=False):
 
 
 def many_types(num_iteration=300, repeats=5):
-    pcs_acquire = 10
+    pcs_acquire = 4
     result = []
     for j in range(repeats):
         for method in ['coarse', 'fine']:
@@ -198,7 +198,7 @@ def many_types(num_iteration=300, repeats=5):
         print json.dumps(result)
 
 
-def dynamic_ratio(num_iteration=100, repeats=1, budget_step=10):
+def dynamic_ratio(num_iteration=300, repeats=1, budget_step=4):
     result = []
     for j in range(repeats):
         for cost in range(1,10):
@@ -223,6 +223,7 @@ def dynamic_ratio(num_iteration=100, repeats=1, budget_step=10):
                     controller.learn_by_cost(budget_step, algo='fixed_fine_ratio', cost_ratio=cost, fixed_fine_budget_ratio=ratio )
                 result.append(result_buffer)
         print json.dumps(result)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
