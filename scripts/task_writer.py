@@ -56,7 +56,7 @@ def build_tasks_lab_specific(param):
 
 def build_tasks(task_model, task_lab, task_split, task_iteration, task_repeat, task_budget, deploy_files = False):
     eta_inc_map = {'manyTypes': {'interval': 0.00015, 'RCV1': 0.01},
-                   'dynamicRatio': {'interval': 0.00015, 'RCV1': 0.01}}
+                   'dynamicRatio': {'interval': 0.00032, 'RCV1': 0.012}}
     eta_inc = eta_inc_map[task_lab][task_model] * task_iteration
     task_list = []
     param = dict()

@@ -32,7 +32,7 @@ class UncertaintySamplingController:
         auc = sklearn.metrics.average_precision_score(labels, preds)
         return auc
 
-    def uncertainty_alpha_beta(self, method, data_group):
+    def uncertainty_alpha_beta(self, method, data_group, agg=False):
         if data_group == 'test':
             coarse_scores, fine_scores_list = self.model.predict_test_scores()
         elif data_group == 'pond':
@@ -55,6 +55,8 @@ class UncertaintySamplingController:
     def current_uncertainty(self, data_group, algo='alpha_beta_max', method='hybrid'):
         if algo == 'alpha_beta_max':
             return self.uncertainty_alpha_beta(method, data_group=data_group)
+        if algo == 'agg_alpha_beta_max':
+            return self.uncertainty_alpha_beta(method, data_group=data_group, agg=True)
 
     def recommend_acquisition_ids(self, num_recommend, algo, method='hybrid'):
         if algo == 'active':
@@ -80,8 +82,9 @@ class UncertaintySamplingController:
     def learn_by_cost(self, budget_size, algo, cost_ratio, fixed_fine_budget_ratio=None):
         budget_size = float(budget_size)
         if algo == 'fixed_fine_ratio':
-            budget_size_fine = budget_size * fixed_fine_budget_ratio
-            budget_size_coarse = budget_size - budget_size_fine
+            step_size_all = budget_size/(cost_ratio*fixed_fine_budget_ratio + (1 -fixed_fine_budget_ratio))
+            budget_size_fine = fixed_fine_budget_ratio*cost_ratio*step_size_all
+            budget_size_coarse = (1-fixed_fine_budget_ratio)*step_size_all
             step_size_fine = int(budget_size_fine / cost_ratio)
             step_size_coarse = int(budget_size_coarse)
             # handle the fraction that do not round up
