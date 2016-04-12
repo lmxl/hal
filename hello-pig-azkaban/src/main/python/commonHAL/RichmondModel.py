@@ -49,18 +49,18 @@ class CRFModelHelper():
         tagger.open('%s/%s.crf' % (CRFModelHelper.workbase, tag))
         y_unk = [CRFModelHelper.sequence_uncertainty(tagger, xseq) for xseq in feats]
         return y_unk
+
     @staticmethod
-    def traincrf((feats, labels, tag)):
+    def traincrf(feats, labels, tag):
         crf=CRFModelHelper.getTrainer()
         for xseq, yseq in zip(feats, labels):
             crf.append(xseq, yseq)
         crf.train('%s/%s.crf' % (CRFModelHelper.workbase, tag))
-        return True
+
     @staticmethod
     def predictcrf(feats, tag):
         tagger = pycrfsuite.Tagger()
         tagger.open('%s/%s.crf' % (CRFModelHelper.workbase, tag))
-        y_pred = []
         y_score = []
         for xseq in feats:
             lseq = tagger.tag(xseq)
@@ -70,9 +70,8 @@ class CRFModelHelper():
                 if lseq[i] == 'token':
                     mag = 1.0 - mag
                 mags.append(mag)
-            y_pred.append(lseq)
-            y_score.append(mags)
-        return y_pred, y_score
+            y_score += mags
+        return y_score
     @staticmethod
     def predict_help():
         return
@@ -122,20 +121,20 @@ class RichmondModel(BaseModel):
         self.fine_crf_models = []
         fine_tags = list(set(chain(*self.training_examples_fine[1])))
         self.coarse_crf_model = 'coarse'
-        CRFModelHelper.traincrf((self.training_examples_fine[0] + self.training_examples_coarse[0],
-                  self.training_examples_fine[2] + self.training_examples_coarse[2], self.coarse_crf_model))
+        CRFModelHelper.traincrf(self.training_examples_fine[0] + self.training_examples_coarse[0],
+                  self.training_examples_fine[2] + self.training_examples_coarse[2], self.coarse_crf_model)
         for fine_tag in fine_tags:
             fine_crf_model = 'fine_' + fine_tag
-            CRFModelHelper.traincrf((self.training_examples_fine[0],
-                                     self.masklabel(self.training_examples_fine[1], mask=fine_tag), fine_crf_model))
+            CRFModelHelper.traincrf(self.training_examples_fine[0],
+                                     self.masklabel(self.training_examples_fine[1], mask=fine_tag), fine_crf_model)
             self.fine_crf_models.append(fine_crf_model)
 
     def predict_scores(self, examples):
         fine_scores_list = []
         for crf_model_key in self.fine_crf_models:
-            fine_scores = CRFModelHelper.predictcrf(examples, crf_model_key)
+            fine_scores = CRFModelHelper.predictcrf(examples[0], crf_model_key)
             fine_scores_list.append(fine_scores)
-        coarse_scores = CRFModelHelper.predictcrf(examples, self.coarse_crf_model)
+        coarse_scores = CRFModelHelper.predictcrf(examples[0], self.coarse_crf_model)
         return coarse_scores, fine_scores_list
 
     def get_pool_size(self):
@@ -148,7 +147,10 @@ class RichmondModel(BaseModel):
         return self.predict_scores(self.test_examples)
 
     def get_test_labels(self):
-        return self.test_examples[2]
+        result = []
+        for sentence in self.test_examples[2]:
+            result += [0.0 if v == 'token' else 1.0 for v in sentence ]
+        return result
 
     def predict_pond_scores(self):
         return self.predict_scores(self.pond_examples)

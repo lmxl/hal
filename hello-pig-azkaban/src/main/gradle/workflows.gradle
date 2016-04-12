@@ -23,11 +23,11 @@ hadoop {
                 "user.to.proxy": lookupDef('proxyUser')
         ]
     }
-
-    def largeMemoryOptions = '-D mapred.job.map.memory.mb=10000 -D stream.memory.limit=10000 -D mapred.job.queue.name=public -D mapred.task.timeout=180000000'
-    def smallMemoryOptions = '-D mapred.job.map.memory.mb=2000 -D stream.memory.limit=2000 -D mapred.job.queue.name=public -D mapred.task.timeout=18000000'
-    def mediumMemoryOptions = '-D mapred.job.map.memory.mb=6000 -D stream.memory.limit=6000 -D mapred.job.queue.name=public -D mapred.task.timeout=18000000'
-    def defaultGenericOptions = smallMemoryOptions
+    def generalOptions = ' -D mapred.output.compression.codec=org.apache.hadoop.io.compress.GzipCodec -D mapred.job.queue.name=public -D mapred.task.timeout=180000000'
+    def largeMemoryOptions = '-D mapred.job.map.memory.mb=10000 -D stream.memory.limit=10000' + generalOptions
+    def smallMemoryOptions = '-D mapred.job.map.memory.mb=6000 -D stream.memory.limit=2000' + generalOptions
+    def mediumMemoryOptions = '-D mapred.job.map.memory.mb=6000 -D stream.memory.limit=6000' + generalOptions
+    def defaultMemoryOptions = smallMemoryOptions
     workflow('halgeneral') {
         def halids = ['richmond', 'RCV1', 'interval']
         def exps = ['manyTypes', 'dynamicRatio']
@@ -57,10 +57,10 @@ hadoop {
                                     break
                                 case 'RCV1':
                                     caches.put('rcv1', '/user/ymo/rcv1.tar.gz')
-                                    props.put('extra.generic.options', mediumMemoryOptions)
+                                    props.put('extra.generic.options', defaultMemoryOptions)
                                     break
                                 default:
-                                    props.put('extra.generic.options', smallMemoryOptions)
+                                    props.put('extra.generic.options', defaultMemoryOptions)
                                     break
                             }
                             cachesArchive files: caches
@@ -118,7 +118,7 @@ hadoop {
                     'mapper'                : 'epd/epd/bin/python richmond/richmond_adv.py',
                     'files'                 : 'src/main/python/richmond',
                     'force.output.overwrite': 'true',
-                    'extra.generic.options' : defaultGenericOptions
+                    'extra.generic.options' : defaultMemoryOptions
             ]
         }
         targets 'pythonGo'
@@ -137,7 +137,7 @@ hadoop {
                     'mapper'                : 'epd/epd/bin/python richmond/richmond_fixed.py',
                     'files'                 : 'src/main/python/richmond',
                     'force.output.overwrite': 'true',
-                    'extra.generic.options' : defaultGenericOptions
+                    'extra.generic.options' : defaultMemoryOptions
             ]
         }
         targets 'pythonGo'
@@ -156,7 +156,7 @@ hadoop {
                     'mapper'                : 'epd/epd/bin/python commonHAL/RCV1Model.py -t many_types',
                     'files'                 : 'src/main/python/commonHAL',
                     'force.output.overwrite': 'true',
-                    'extra.generic.options' : defaultGenericOptions
+                    'extra.generic.options' : defaultMemoryOptions
             ]
         }
 
@@ -172,7 +172,7 @@ hadoop {
                     'mapper'                : 'epd/epd/bin/python commonHAL/RCV1Model.py -t dynamic_ratio',
                     'files'                 : 'src/main/python/commonHAL',
                     'force.output.overwrite': 'true',
-                    'extra.generic.options' : defaultGenericOptions
+                    'extra.generic.options' : defaultMemoryOptions
             ]
         }
 

@@ -6,7 +6,7 @@ import RCV1Model
 
 
 def run_from_tasks(f_input = sys.stdin):
-    for line in sys.stdin:
+    for line in f_input:
         param = json.loads(line)
         task_model = param['model']
         task_lab = param['lab']
@@ -62,6 +62,10 @@ def run_from_tasks(f_input = sys.stdin):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-t')
+    parser.add_argument('-f')
     args = parser.parse_args()
     if args.t == 'tasks':
-        run_from_tasks()
+        run_from_tasks(sys.stdin)
+    if args.t == 'unittest':
+        with open(args.f) as f_input:
+            run_from_tasks(f_input)

@@ -50,6 +50,12 @@ class RCV1Model(BaseModel):
         self.test_examples = [test_x, test_z, test_y]
         self.fine_lr_models = None
         self.coarse_lr_model = None
+        print >> sys.stderr, 'Loading done fine=%d coarse=%d pool=%d test=%d pond=%d' % \
+                             (self.training_examples_fine[1].shape[0],
+                              self.training_examples_coarse[1].shape[0],
+                              self.pool_examples[1].shape[0],
+                              self.test_examples[1].shape[0],
+                              self.pond_examples[0].shape[0])
 
     def fit(self):
         # train fine models
@@ -162,7 +168,7 @@ class RCV1Model(BaseModel):
 
 
 def set_up(pond_enabled=False):
-    pond_size = 2000
+    pond_size = 4000
     train_fine_size = 1000
     train_coarse_size = 1000
     model = RCV1Model(train_size_fine=train_fine_size, train_size_coarse=train_coarse_size, pond_size=pond_size)

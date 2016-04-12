@@ -32,7 +32,7 @@ class UncertaintySamplingController:
         auc = sklearn.metrics.average_precision_score(labels, preds)
         return auc
 
-    def uncertainty_alpha_beta(self, method, data_group, agg=False):
+    def uncertainty_alpha_beta(self, method, data_group, agg=None):
         if data_group == 'test':
             coarse_scores, fine_scores_list = self.model.predict_test_scores()
         elif data_group == 'pond':
@@ -149,7 +149,7 @@ class UncertaintySamplingController:
         return ucties
 
     @staticmethod
-    def score_alpha_beta(raw_scores):
+    def score_alpha_beta(raw_scores, agg=None):
         # alpha -> coarse weight
         # beta -> fine weight
         alpha = 0.5

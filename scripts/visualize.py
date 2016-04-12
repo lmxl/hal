@@ -4,17 +4,18 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set_palette(sns.color_palette("hls", 20))
 
 def update_from_HDFS():
+    print >> sys.stderr, 'Downloads started'
     dali_get = ["/usr/local/linkedin/bin/dali", "fs", "-copyToLocal"]
     webfs = "webhdfs://eat1-nertznn01.grid.linkedin.com:50070"
-    call(["rm", "-rf", "results"])
-    call(["mkdir", "-p", "results"])
-    call(dali_get + [webfs + "/user/ymo/hal/results"])
+    call(["rm", "-rf", "../build/results"])
+    call(dali_get + [webfs + "/user/ymo/hal/results", '../build/'])
+    print >> sys.stderr, 'Downloads finished'
 
 def get_raw_results(halid, task_lab):
-    path = 'results/' + task_lab + '/' + halid
+    path = '../build/results/' + task_lab + '/' + halid
+    path = os.path.expandvars(path)
     results = dict()
     for filename in os.listdir(path):
         if not filename.startswith('part-'):
@@ -56,16 +57,8 @@ def show_figure(df, legend_loc=4):
 
 
 def main():
-    # update_from_HDFS()
-
-    for j, task_model in enumerate(['interval', 'RCV1']):
-        plt.figure(figsize=(28,20), dpi=300)
-        z = get_results(task_model, 'dynamicRatio')
-        for i, v in enumerate(z.index.levels[0]):
-            plt.subplot(4,3,i+1)
-            plt.title('%s: Ratio at %d' % (task_model, i+1))
-            show_figure(z.loc[v])
-        plt.savefig('figure/%s-bandit.png' % task_model)
+    update_from_HDFS()
+    sns.set_palette(sns.color_palette("hls", 4))
 
     plt.figure(figsize=(20, 6), dpi=300)
     for i, task_model in enumerate(['interval', 'RCV1']):
@@ -74,6 +67,18 @@ def main():
         plt.title('%s: Comparing Fine/Coarse Active/Passive' % task_model)
         show_figure(df)
     plt.savefig('figure/draft.png')
+
+    sns.set_palette(sns.color_palette("hls", 16))
+    for j, task_model in enumerate(['interval', 'RCV1']):
+        plt.figure(figsize=(28,20), dpi=300)
+        z = get_results(task_model, 'dynamicRatio')
+        for i, v in enumerate(z.index.levels[0]):
+            plt.subplot(4,3,i+1)
+            plt.title('%s: Ratio at %s' % (task_model, v))
+            show_figure(z.loc[v])
+        plt.savefig('figure/%s-bandit.png' % task_model)
+
+
 
 if __name__ == '__main__':
     main()

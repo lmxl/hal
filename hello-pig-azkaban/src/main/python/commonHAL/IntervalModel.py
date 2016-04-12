@@ -35,13 +35,12 @@ class IntervalModel:
             gbr_model = GradientBoostingRegressor(n_estimators=30,
                                                   learning_rate=0.9,
                                                   max_depth=1,
-                                                  random_state=0,
                                                   subsample=0.8)
             gbr_model.fit(self.training_examples_fine[0], y)
             self.fine_gbr_models.append(gbr_model)
 
         # train coarse model
-        self.coarse_gbr_model = GradientBoostingRegressor(n_estimators=300, learning_rate=0.9, max_depth=1, random_state=0, subsample=0.8)
+        self.coarse_gbr_model = GradientBoostingRegressor(n_estimators=300, learning_rate=0.9, max_depth=1, subsample=0.8)
         self.coarse_gbr_model.fit(self.training_examples_fine[0] + self.training_examples_coarse[0],
                                   self.training_examples_fine[2] + self.training_examples_coarse[2])
 
@@ -168,10 +167,15 @@ class IntervalModel:
 
 def set_up(pond_enabled=False):
     pool_size = 10000
-    test_size = 1000
-    train_fine_size = 100
-    train_coarse_size = 0
-    model = IntervalModel(train_fine_size, train_coarse_size, pool_size, test_size)
+    test_size = 8000
+    pond_size = 4000
+    train_fine_size = 50
+    train_coarse_size = 50
+    model = IntervalModel(train_size_fine=train_fine_size,
+                          train_size_coarse=train_coarse_size,
+                          pool_size=pool_size,
+                          test_size=test_size,
+                          pond_size=pond_size)
     model.fit()
     controller = UncertaintySamplingController.UncertaintySamplingController(model,
                                                                              pond_enabled=pond_enabled,
@@ -189,7 +193,7 @@ def many_types(num_iteration=300, repeats=5):
                 result_buffer = []
                 for i in range(num_iteration):
                     metric = controller.current_metric()
-                    print >> sys.stderr, 'repeat %d [ %s  %s ] iteration %d' % (j, method, algo, i)
+                    print >> sys.stderr, 'repeat %d [ %s %s ] iteration %d' % (j, method, algo, i)
                     result_buffer.append(metric)
                     pcs, ucties = controller.recommend_acquisition_ids(pcs_acquire, algo=algo, method=method)
                     controller.model.acquire_example_ids(pcs, method)

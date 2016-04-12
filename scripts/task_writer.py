@@ -28,11 +28,12 @@ def generate_task_files(task_path, task_lab, task_list, task_split, task_model, 
 def deploy_task_files(task_model, task_lab, local_src):
     remote_path = 'dali://nertz/user/ymo/hal/tasks' + '/' + task_lab
     remote_dest = remote_path + '/' + task_model
+    dali_bin = '/usr/local/linkedin/bin/dali'
     print >> sys.stderr, 'Starting [ %s %s ] deployment from [ %s ] into [ %s ]' % \
                          (task_model, task_lab, local_src, remote_dest)
-    call(['dali', 'fs', '-rm', '-r', '-f', remote_dest])
-    call(['dali', 'fs', '-mkdir',remote_path])
-    call(['dali', 'fs', '-put', local_src, remote_path])
+    call([dali_bin, 'fs', '-rm', '-r', '-f', remote_dest])
+    call([dali_bin, 'fs', '-mkdir',remote_path])
+    call([dali_bin, 'fs', '-put', local_src, remote_path])
     print >> sys.stderr, 'Finished deployment'
 
 
@@ -44,7 +45,10 @@ def build_tasks_lab_specific(param):
                 param['algo'] = task_algo
                 yield param
     elif param['lab'] == 'dynamicRatio':
-        for param['fine_cost'] in np.linspace(start=1, stop=10, num=10):
+        fine_cost_config = {
+            'interval': [1.0, 1.1, 1.2, 1.5, 2.0, 4.0, 8.0, 16.0],
+            'RCV1': [1.0, 1.1, 1.2, 1.5, 2.0, 4.0, 8.0, 16.0]}
+        for param['fine_cost'] in fine_cost_config[param['model']]:
             param['algo'] = 'fixed_fine_ratio'
             for param['fine_ratio'] in np.linspace(start=0.0, stop=1.0, num=11):
                 yield param
@@ -55,8 +59,8 @@ def build_tasks_lab_specific(param):
 
 
 def build_tasks(task_model, task_lab, task_split, task_iteration, task_repeat, task_budget, deploy_files = False):
-    eta_inc_map = {'manyTypes': {'interval': 0.00015, 'RCV1': 0.01},
-                   'dynamicRatio': {'interval': 0.00032, 'RCV1': 0.012}}
+    eta_inc_map = {'manyTypes': {'interval': 0.00020, 'RCV1': 0.006},
+                   'dynamicRatio': {'interval': 0.00028, 'RCV1': 0.0085}}
     eta_inc = eta_inc_map[task_lab][task_model] * task_iteration
     task_list = []
     param = dict()
@@ -67,39 +71,46 @@ def build_tasks(task_model, task_lab, task_split, task_iteration, task_repeat, t
     for j in range(task_repeat):
         param['repeat'] = j
         task_list += [json.dumps(v) for v in build_tasks_lab_specific(param)]
-    local_path = 'tasks'
+    local_path = '../build/tasks'
     generate_task_files(local_path, task_lab, task_list, task_split, task_model, eta_inc, deploy_files)
 
 if __name__ == '__main__':
-    redeploy_all = True
+    redeploy_all = False
+    interval_budget = 1
+    interval_repeat = 200
+    interval_iteration = 350
+    RCV1_budget = 120
+    RCV1_repeat = 50
+    RCV1_iteration = 100
+
     build_tasks(task_model='interval',
                 task_lab='manyTypes',
-                task_split=100,
-                task_iteration=300,
-                task_repeat=400,
-                task_budget=4,
+                task_split=10,
+                task_iteration=interval_iteration,
+                task_repeat=interval_repeat,
+                task_budget=interval_budget,
                 deploy_files=False or redeploy_all)
 
     build_tasks(task_model='RCV1',
                 task_lab='manyTypes',
-                task_split=100,
-                task_iteration=100,
-                task_repeat=25,
-                task_budget=150,
+                task_split=20,
+                task_iteration=RCV1_iteration,
+                task_repeat=RCV1_repeat,
+                task_budget=RCV1_budget,
                 deploy_files=False or redeploy_all)
 
     build_tasks(task_model='interval',
                 task_lab='dynamicRatio',
                 task_split=300,
-                task_iteration=300,
-                task_repeat=40,
-                task_budget=4,
+                task_iteration=interval_iteration,
+                task_repeat=interval_repeat,
+                task_budget=interval_budget,
                 deploy_files=False or redeploy_all)
 
     build_tasks(task_model='RCV1',
                 task_lab='dynamicRatio',
-                task_split=300,
-                task_iteration=100,
-                task_repeat=5,
-                task_budget=150,
+                task_split=700,
+                task_iteration=RCV1_iteration,
+                task_repeat=RCV1_repeat,
+                task_budget=RCV1_budget,
                 deploy_files=False or redeploy_all)
